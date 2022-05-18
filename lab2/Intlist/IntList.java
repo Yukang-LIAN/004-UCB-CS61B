@@ -86,10 +86,10 @@ public class IntList {
             return B;
         }
         IntList ptr = A;
-        while (ptr != null) {
-            ptr = ptr.next;
+        while (ptr.rest != null) {
+            ptr = ptr.rest;
         }
-        ptr.next = B;
+        ptr.rest = B;
         return A;
     }
 
@@ -103,13 +103,15 @@ public class IntList {
             return B;
         }
         IntList ptr = A;
-        IntList new_A = newIntList(ptr, null);
-        while (ptr.next != null) {
-            ptr = ptr.next;
-            new_A.next = newIntList(ptr, null);
+        IntList new_A = new IntList(ptr.first, null);
+        IntList new_A_head = new_A;
+        while (ptr.rest != null) {
+            ptr = ptr.rest;
+            new_A.rest = new IntList(ptr.first, null);
+            new_A = new_A.rest;
         }
-        new_A.next = B;
-        return new_A;
+        new_A.rest = B;
+        return new_A_head;
     }
 
     /**
