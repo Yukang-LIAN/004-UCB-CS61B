@@ -57,6 +57,39 @@ public class NBody {
             planetList[i].draw();
         }
         StdDraw.show();
+
+        /*
+         * * Creating an Animation
+         */
+        StdDraw.enableDoubleBuffering();
+        double time = 0;
+        while (time != T) {
+            double[] xForces = new double[planetList.length];
+            double[] yForces = new double[planetList.length];
+            for (int i = 0; i < planetList.length; i++) {
+                xForces[i] = planetList[i].calcNetForceExertedByX(planetList);
+                yForces[i] = planetList[i].calcNetForceExertedByY(planetList);
+            }
+            for (int i = 0; i < xForces.length; i++) {
+                planetList[i].update(dt, xForces[i], yForces[i]);
+            }
+            /*
+             * * Drawing the Background
+             */
+            StdDraw.setScale(-radius, radius);
+            StdDraw.clear();
+            StdDraw.picture(0, 0, "./images/starfield.jpg");
+
+            /*
+             * * Drawing All of the Planets
+             */
+            for (int i = 0; i < planetList.length; i++) {
+                planetList[i].draw();
+            }
+            StdDraw.show();
+            StdDraw.pause(10);
+            time += dt;
+        }
     }
 
 }
