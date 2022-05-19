@@ -105,4 +105,11 @@ public class Planet {
         this.xxPos = this.xxPos + this.xxVel * dt;
         this.yyPos = this.yyPos + this.yyVel * dt;
     }
+
+    /**
+     * * Drawing One Planet
+     */
+    public void draw() {
+        StdDraw.picture(this.xxPos, this.yyPos, "./images/"+imgFileName);
+    }
 }
