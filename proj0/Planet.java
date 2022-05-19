@@ -89,7 +89,7 @@ public class Planet {
             }
             F = (this.calcForceExertedBy(array_p[i])) * (array_p[i].yyPos - this.yyPos)
                     / (this.calcDistance(array_p[i]));
-            F += F;
+            Fy += F;
         }
         return Fy;
     }
@@ -110,6 +110,6 @@ public class Planet {
      * * Drawing One Planet
      */
     public void draw() {
-        StdDraw.picture(this.xxPos, this.yyPos, "./images/"+imgFileName);
+        StdDraw.picture(this.xxPos, this.yyPos, "./images/" + imgFileName);
     }
 }
