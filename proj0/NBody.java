@@ -63,7 +63,7 @@ public class NBody {
          */
         StdDraw.enableDoubleBuffering();
         double time = 0;
-        while (time != T) {
+        while (time < T) {
             double[] xForces = new double[planetList.length];
             double[] yForces = new double[planetList.length];
             for (int i = 0; i < planetList.length; i++) {
