@@ -1,6 +1,6 @@
 public class LinkedListDeque<T> {
 
-    public class LinkedList {
+    private class LinkedList {
         public T item;
         public LinkedList prev;
         public LinkedList next;
@@ -12,8 +12,8 @@ public class LinkedListDeque<T> {
         }
     }
 
-    public LinkedList sentinel = new LinkedList(null, null, null);
-    public int size = 0;
+    private LinkedList sentinel = new LinkedList(null, null, null);
+    private int size = 0;
 
     /**
      * * Creates an empty linked list deque.
@@ -78,7 +78,7 @@ public class LinkedListDeque<T> {
      * * exists, returns null.
      */
     public T removeFirst() {
-        if (this.size() == 0) {
+        if (this.size == 0) {
             return null;
         }
         this.size--;
@@ -93,7 +93,7 @@ public class LinkedListDeque<T> {
      * * exists, returns null.
      */
     public T removeLast() {
-        if (this.size() == 0) {
+        if (this.size == 0) {
             return null;
         }
         this.size--;
@@ -129,7 +129,7 @@ public class LinkedListDeque<T> {
     /**
      * * helper
      */
-    public T helper(LinkedList ptr, int index) {
+    private T helper(LinkedList ptr, int index) {
         if (index >= this.size) {
             return null;
         }
