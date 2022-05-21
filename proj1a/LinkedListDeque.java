@@ -109,7 +109,7 @@ public class LinkedListDeque<T> {
      * * If no such item exists, returns null. Must not alter the deque!
      */
     public T get(int index) {
-        if (index > this.size) {
+        if (index >= this.size) {
             return null;
         }
         LinkedList ptr = this.sentinel.next;
@@ -124,7 +124,7 @@ public class LinkedListDeque<T> {
      * * Same as get, but uses recursion.
      */
     public T getRecursive(int index) {
-        if (index > this.size) {
+        if (index >= this.size) {
             return null;
         }
         return helper(this.sentinel.next, index);
