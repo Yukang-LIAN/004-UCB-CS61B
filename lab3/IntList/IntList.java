@@ -123,12 +123,12 @@ public class IntList {
         if (A == null) {
             return null;
         }
-        IntList pre=null;
-        while(A!=null){
-            IntList next=A.rest;
-            A.rest=pre;
-            pre=A;
-            A=next;
+        IntList pre = null;
+        while (A != null) {
+            IntList next = A.rest;
+            A.rest = pre;
+            pre = A;
+            A = next;
         }
         return pre;
     }
