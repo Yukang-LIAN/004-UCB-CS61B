@@ -91,5 +91,15 @@ public class LinkedListDequeTest {
 		System.out.println("Running tests.\n");
 		addIsEmptySizeTest();
 		addRemoveTest();
+		LinkedListDeque a=new LinkedListDeque();
+		a.addLast(0);
+		a.isEmpty();
+		a.isEmpty();
+		a.addLast(3);
+		a.addLast(4);
+		a.addLast(5);
+		a.addLast(6);
+		a.addLast(7);
+		a.getRecursive(2);
 	}
 }
