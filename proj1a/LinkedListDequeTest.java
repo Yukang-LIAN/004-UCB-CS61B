@@ -43,7 +43,6 @@ public class LinkedListDequeTest {
 		LinkedListDeque<String> lld1 = new LinkedListDeque<String>();
 
 		boolean passed = checkEmpty(true, lld1.isEmpty());
-
 		lld1.addFirst("front");
 
 		// The && operator is the same as "and" in Python.

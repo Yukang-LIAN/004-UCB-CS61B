@@ -78,13 +78,13 @@ public class LinkedListDeque<T> {
      * * exists, returns null.
      */
     public T removeFirst() {
-        if (this.size == 0) {
+        if (this.isEmpty()) {
             return null;
         }
-        this.size--;
         T firstItem = this.sentinel.next.item;
-        sentinel.next.next.prev = sentinel;
-        this.sentinel.next = sentinel.next.next;
+        this.sentinel.next.next.prev = this.sentinel;
+        this.sentinel.next = this.sentinel.next.next;
+        this.size--;
         return firstItem;
     }
 
@@ -93,13 +93,13 @@ public class LinkedListDeque<T> {
      * * exists, returns null.
      */
     public T removeLast() {
-        if (this.size == 0) {
+        if (this.isEmpty()) {
             return null;
         }
-        this.size--;
         T lastItem = this.sentinel.prev.item;
-        sentinel.prev.prev.next = sentinel;
-        this.sentinel.prev = sentinel.prev.prev;
+        this.sentinel.prev.prev.next = this.sentinel;
+        this.sentinel.prev = this.sentinel.prev.prev;
+        this.size--;
         return lastItem;
     }
 
@@ -109,12 +109,13 @@ public class LinkedListDeque<T> {
      * * If no such item exists, returns null. Must not alter the deque!
      */
     public T get(int index) {
-        if (index >= this.size) {
+        if (index > this.size) {
             return null;
         }
         LinkedList ptr = this.sentinel.next;
-        for (int i = 0; i < index; i++) {
+        while (index > 0) {
             ptr = ptr.next;
+            index--;
         }
         return ptr.item;
     }
@@ -123,6 +124,9 @@ public class LinkedListDeque<T> {
      * * Same as get, but uses recursion.
      */
     public T getRecursive(int index) {
+        if (index > this.size) {
+            return null;
+        }
         return helper(this.sentinel.next, index);
     }
 
@@ -130,9 +134,7 @@ public class LinkedListDeque<T> {
      * * helper
      */
     private T helper(LinkedList ptr, int index) {
-        if (index >= this.size) {
-            return null;
-        }
+        
         if (index == 0) {
             return ptr.item;
         }
