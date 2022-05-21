@@ -4,6 +4,7 @@ public class ArrayDeque<T> {
     private int size = 0;
     private int next = 4;
     private int prev = 3;
+    private int count = 8;
 
     /**
      * * Creates an empty linked list deque.
@@ -16,18 +17,24 @@ public class ArrayDeque<T> {
      * * Adds an item of type T to the front of the deque.
      */
     public void addFirst(T item) {
+        if (isFull()) {
+            resize((int) (1.5 * count));
+        }
         this.size++;
         this.array[prev] = item;
-        prev = (prev + 7) % 8;
+        prev = (prev + -1 + count) % count;
     }
 
     /**
      * * Adds an item of type T to the back of the deque.
      */
     public void addLast(T item) {
+        if (isFull()) {
+            resize((int) (1.5 * count));
+        }
         this.size++;
         this.array[next] = item;
-        next = (next + 1) % 8;
+        next = (next + 1) % count;
     }
 
     /**
@@ -53,7 +60,7 @@ public class ArrayDeque<T> {
      */
     public void printDeque() {
         for (int i = 0; i < this.size; i++) {
-            System.out.print(array[(prev + i + 1) % 8] + " ");
+            System.out.print(array[(prev + i + 1) % count] + " ");
         }
     }
 
@@ -65,10 +72,13 @@ public class ArrayDeque<T> {
         if (this.isEmpty()) {
             return null;
         }
-        prev = (prev + 1) % 8;
+        prev = (prev + 1) % count;
         T tmp = array[prev];
         array[prev] = null;
         this.size--;
+        if (isLow()) {
+            resize((int) (0.5 * count));
+        }
         return tmp;
     }
 
@@ -80,16 +90,19 @@ public class ArrayDeque<T> {
         if (this.isEmpty()) {
             return null;
         }
-        next = (next + 7) % 8;
+        next = (next - 1 + count) % count;
         T tmp = array[next];
         array[next] = null;
         this.size--;
+        if (isLow()) {
+            resize((int) (0.5 * count));
+        }
         return tmp;
     }
 
     /**
      * * Gets the item at the given index, where 0 is the front, 1 is the next
-     * item,
+     * * item,
      * * and so forth.
      * * If no such item exists, returns null. Must not alter the deque!
      */
@@ -97,7 +110,19 @@ public class ArrayDeque<T> {
         if (index >= this.size) {
             return null;
         }
-        return array[(prev + 1 + index) % 8];
+        return array[(prev + 1 + index) % count];
+    }
+
+    private boolean isFull() {
+        return this.size == count;
+    }
+
+    private boolean isLow() {
+        return (count > 16) && (this.size / (double) count < 0.25);
+    }
+
+    private void resize(int newCount) {
+
     }
 
 }
