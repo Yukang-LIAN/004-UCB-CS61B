@@ -1,6 +1,6 @@
 public class LinkedListDeque<T> {
 
-    public class LinkedList{
+    public class LinkedList {
         public T item;
         public LinkedList prev;
         public LinkedList next;
@@ -118,4 +118,26 @@ public class LinkedListDeque<T> {
         }
         return ptr.item;
     }
+
+    /**
+     * * Same as get, but uses recursion.
+     */
+    public T getRecursive(int index) {
+        return helper(this.sentinel.next, index);
+    }
+
+    /**
+     * * helper
+     */
+    public T helper(LinkedList ptr, int index) {
+        if (index >= this.size) {
+            return null;
+        }
+        if (index == 0) {
+            return ptr.item;
+        }
+        ptr = ptr.next;
+        return helper(ptr, index - 1);
+    }
+
 }
