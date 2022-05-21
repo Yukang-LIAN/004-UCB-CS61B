@@ -1,6 +1,6 @@
 public class ArrayDeque<T> {
 
-    T[] array = (T[]) new Object[8];
+    private T[] array = (T[]) new Object[8];
     private int size = 0;
     private int next = 4;
     private int prev = 3;
@@ -17,8 +17,8 @@ public class ArrayDeque<T> {
      */
     public void addFirst(T item) {
         this.size++;
-        this.array[next] = item;
-        next = (next + 1) % 8;
+        this.array[prev] = item;
+        prev = (prev + 7) % 8;
     }
 
     /**
@@ -26,8 +26,8 @@ public class ArrayDeque<T> {
      */
     public void addLast(T item) {
         this.size++;
-        this.array[prev] = item;
-        prev = (prev + 7) % 8;
+        this.array[next] = item;
+        next = (next + 1) % 8;
     }
 
     /**
