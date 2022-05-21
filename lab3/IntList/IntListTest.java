@@ -81,7 +81,6 @@ public class IntListTest {
 
     }
 
-    @Test(timeout = 1000)
 
     /**
      * If you're running this from the command line, you'll need
