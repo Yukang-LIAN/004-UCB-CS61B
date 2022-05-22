@@ -114,7 +114,7 @@ public class ArrayDeque<T> {
     }
 
     private boolean isFull() {
-        return this.size == count;
+        return this.size == count - 1;
     }
 
     private boolean isLow() {
@@ -122,7 +122,18 @@ public class ArrayDeque<T> {
     }
 
     private void resize(int newCount) {
+        T[] newArray = (T[]) new Object[newCount];
+        int newPrev = prev;
+        int i = 1;
+        while (((prev + i) % count) != next) {
+            newArray[(newPrev + i) % newCount] = array[(prev + i) % count];
+            i++;
+        }
 
+        prev = newPrev;
+        next = (newPrev + i) % newCount;
+        count = newCount;
+        array = newArray;
     }
 
 }

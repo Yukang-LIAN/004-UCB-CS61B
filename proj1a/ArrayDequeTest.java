@@ -1,16 +1,22 @@
-public class ArrayDequeTest{
+public class ArrayDequeTest {
     public static void main(String[] args) {
-        ArrayDeque a=new ArrayDeque();
+        ArrayDeque a = new ArrayDeque();
         a.addFirst(0);
-        a.addFirst(1);
+        a.removeFirst();
         a.addFirst(2);
-        a.addFirst(3);
-        a.addFirst(4);
+        a.removeFirst();
+        a.addLast(4);
         a.addFirst(5);
         a.addFirst(6);
-        a.removeFirst();
+        a.addLast(7);
+        a.addLast(8);
+        a.addLast(9);
         a.removeLast();
-        a.get(2);
-        a.printDeque();
+        a.addFirst(11);
+        a.addFirst(12);
+        a.addFirst(13);
+        a.addLast(14);
+        a.removeLast();
+        a.removeFirst();
     }
 }
