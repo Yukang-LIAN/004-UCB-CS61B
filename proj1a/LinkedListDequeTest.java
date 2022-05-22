@@ -91,7 +91,7 @@ public class LinkedListDequeTest {
 		System.out.println("Running tests.\n");
 		addIsEmptySizeTest();
 		addRemoveTest();
-		LinkedListDeque a=new LinkedListDeque();
+		LinkedListDeque a = new LinkedListDeque();
 		a.addLast(0);
 		a.isEmpty();
 		a.isEmpty();
