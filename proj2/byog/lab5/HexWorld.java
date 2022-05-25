@@ -41,12 +41,6 @@ public class HexWorld {
             }
         }
 
-        // fills in a block 14 tiles wide by 4 tiles tall
-        int x = 30;
-        int y = 15;
-        int min = 1;
-        int max = 2;
-
         drawHexagon(world, 5, 30, 15);
 
         // draws the world to the screen
