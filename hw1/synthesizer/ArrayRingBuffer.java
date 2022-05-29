@@ -65,13 +65,12 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T> {
         }
         T res = rb[first];
         first++;
-        if(first == capacity) {
+        if (first == capacity) {
             first = 0;
         }
         fillCount--;
         return res;
     }
-
 
 
     /**
