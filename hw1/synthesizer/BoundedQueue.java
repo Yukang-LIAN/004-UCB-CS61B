@@ -1,6 +1,6 @@
 package synthesizer;
 
-public interface BoundedQuene<T> extends Iterable<T> {
+public interface BoundedQueue<T> extends Iterable<T> {
     int capacity();
 
     int fillCount();
