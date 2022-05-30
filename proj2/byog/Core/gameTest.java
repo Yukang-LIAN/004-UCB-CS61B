@@ -16,7 +16,7 @@ public class gameTest {
     @Test
     public void testGetSeed(){
         String input = "n1234s";
-        int output=game.getSeed(input);
+        long output=game.getSeed(input);
         assertEquals(1234,output);
     }
 }

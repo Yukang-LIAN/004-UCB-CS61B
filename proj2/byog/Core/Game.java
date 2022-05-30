@@ -2,6 +2,9 @@ package byog.Core;
 
 import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
+import byog.TileEngine.Tileset;
+
+import java.util.Random;
 
 public class Game {
     TERenderer ter = new TERenderer();
@@ -51,7 +54,11 @@ public class Game {
 
     /** * @param input is an argument * @return the new random world */
     public TETile[][] newGame(String input) {
-        return generateWorld(getSeed(input));
+        long SEED=getSeed(input);
+        TETile[][] finalWorldFrame = generateWorld(SEED);
+        showWorld(finalWorldFrame);
+        play(finalWorldFrame);
+        return finalWorldFrame;
     }
 
     /** * @param SEED is a an argument * @return the loaded world */
@@ -61,21 +68,22 @@ public class Game {
     }
 
     /** * @param input is a String * @return String to int */
-    public int getSeed(String input) {
+    public long getSeed(String input) {
         input = input.substring(0, input.length() - 1);
         input = input.substring(1);
-        return Integer.parseInt(input);
+        return Long.parseLong(input);
     }
 
     /** * @param SEED is a random number * @return the whole world */
-    public TETile[][] generateWorld(int SEED) {
-        TETile[][] randomRoom = generateRandomRoom(SEED);
+    public TETile[][] generateWorld(long SEED) {
+        TETile[][] randomMap = generateRandomMap(SEED);
+        TETile[][] randomRoom = generateRandomRoom(randomMap);
         TETile[][] linkedRoom = linkedRandomRoom(randomRoom);
-        return null;
+        return randomMap;
     }
 
     /** * @param SEED is a random number * @return the random room */
-    public TETile[][] generateRandomRoom(int SEED) {
+    public TETile[][] generateRandomRoom(TETile[][] randomMap) {
         return null;
     }
 
@@ -83,4 +91,40 @@ public class Game {
     public TETile[][] linkedRandomRoom(TETile[][] randomRoom) {
         return null;
     }
+
+    /** * @param randomRoom is a random room * @return the linked random room */
+    public TETile[][] generateRandomMap(long SEED) {
+        Random RANDOM = new Random(SEED);
+        TETile[][] randomRoom = new TETile[WIDTH][HEIGHT];
+        fillWithRandomTiles(randomRoom, RANDOM);
+        return randomRoom;
+    }
+
+    public static void fillWithRandomTiles(TETile[][] tiles, Random RANDOM) {
+        int height = tiles[0].length;
+        int width = tiles.length;
+        for (int x = 0; x < width; x += 1) {
+            for (int y = 0; y < height; y += 1) {
+                tiles[x][y] = randomTile(RANDOM);
+            }
+        }
+    }
+
+    private static TETile randomTile(Random RANDOM) {
+        int tileNum = RANDOM.nextInt(2);
+        if (tileNum == 0) {
+            return Tileset.WALL;
+        }
+        return Tileset.NOTHING;
+    }
+
+    public void showWorld(TETile[][] finalWorldFrame){
+        ter.initialize(WIDTH,HEIGHT);
+        ter.renderFrame(finalWorldFrame);
+    }
+
+    public void play(TETile[][] finalWorldFrame){
+
+    }
+
 }
