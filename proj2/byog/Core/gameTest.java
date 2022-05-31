@@ -4,6 +4,8 @@ import byog.TileEngine.TETile;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
+import java.util.ArrayList;
+
 public class gameTest {
     public Game game = new Game();
 
@@ -18,5 +20,28 @@ public class gameTest {
         String input = "n1234s";
         long output=game.getSeed(input);
         assertEquals(1234,output);
+    }
+    @Test
+    public void testIsOverlap(){
+
+        Game.Rectangle rec1=new Game.Rectangle(0,0,2,2);
+        Game.Rectangle rec2=new Game.Rectangle(2,2,3,3);
+        boolean output=game.isOverlap(rec1,rec2);
+        assertFalse(output);
+    }
+    @Test
+    public void testCanRoomPlaced(){
+
+        Game.Rectangle rec0=new Game.Rectangle(0,0,3,3);
+        Game.Rectangle rec1=new Game.Rectangle(0,0,2,2);
+        Game.Rectangle rec2=new Game.Rectangle(2,2,3,3);
+        Game.Rectangle rec3=new Game.Rectangle(3,3,4,4);
+        ArrayList<Game.Rectangle> exist= new ArrayList<>();
+        exist.add(rec2);
+        exist.add(rec3);
+        boolean output0=game.canRoomPlaced(rec0,exist);
+        assertFalse(output0);
+        boolean output1=game.canRoomPlaced(rec1,exist);
+        assertTrue(output1);
     }
 }

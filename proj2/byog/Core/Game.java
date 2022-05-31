@@ -4,16 +4,31 @@ import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class Game {
     TERenderer ter = new TERenderer();
     /* Feel free to change the width and height. */
     public static final int WIDTH = 80;
-    public static final int HEIGHT = 30;
+    public static final int HEIGHT = 40;
 
     /** Method used for playing a fresh game. The game should start from the main menu. */
     public void playWithKeyboard() {}
+
+    public static class Rectangle {
+        int left;
+        int right;
+        int top;
+        int bottom;
+
+        public Rectangle(int left, int bottom, int right, int top) {
+            this.left = left;
+            this.right = right;
+            this.top = top;
+            this.bottom = bottom;
+        }
+    }
 
     /**
      * Method used for autograding and testing the game code. The input string will be a series of
@@ -54,7 +69,7 @@ public class Game {
 
     /** * @param input is an argument * @return the new random world */
     public TETile[][] newGame(String input) {
-        long SEED=getSeed(input);
+        long SEED = getSeed(input);
         TETile[][] finalWorldFrame = generateWorld(SEED);
         showWorld(finalWorldFrame);
         play(finalWorldFrame);
@@ -68,6 +83,7 @@ public class Game {
     }
 
     /** * @param input is a String * @return String to int */
+    /** !!TODO: getseed */
     public long getSeed(String input) {
         input = input.substring(0, input.length() - 1);
         input = input.substring(1);
@@ -76,15 +92,27 @@ public class Game {
 
     /** * @param SEED is a random number * @return the whole world */
     public TETile[][] generateWorld(long SEED) {
-        TETile[][] randomMap = generateRandomMap(SEED);
-        TETile[][] randomRoom = generateRandomRoom(randomMap);
+        TETile[][] randomRoom = generateRandomRoom(SEED, 1000);
         TETile[][] linkedRoom = linkedRandomRoom(randomRoom);
-        return randomMap;
+        /** !! TODO: return linkedRoom */
+        return randomRoom;
     }
 
     /** * @param SEED is a random number * @return the random room */
-    public TETile[][] generateRandomRoom(TETile[][] randomMap) {
-        return null;
+    public TETile[][] generateRandomRoom(long SEED, int roomNum) {
+        ArrayList<Rectangle> existRects = new ArrayList<>();
+        int th = 0;
+        for (int i = 0; i < roomNum; ) {
+            Rectangle rectangle = generateRectangle(new Random(SEED + i + th), th);
+            if (canRoomPlaced(rectangle, existRects)) {
+                i++;
+                existRects.add(rectangle);
+            } else {
+                th++;
+                if (th > 1000) break;
+            }
+        }
+        return roomSet(existRects);
     }
 
     /** * @param randomRoom is a random room * @return the linked random room */
@@ -92,39 +120,80 @@ public class Game {
         return null;
     }
 
-    /** * @param randomRoom is a random room * @return the linked random room */
-    public TETile[][] generateRandomMap(long SEED) {
-        Random RANDOM = new Random(SEED);
+    public Rectangle generateRectangle(Random RANDOM, int tryNum) {
+        int randomWidth, randomHeight;
+        if (tryNum < 50) {
+            randomWidth = RANDOM.nextInt(WIDTH / 10) + 2;
+            randomHeight = RANDOM.nextInt(HEIGHT / 5) + 2;
+        } else {
+            randomWidth = RANDOM.nextInt(WIDTH / 20) + 2;
+            randomHeight = RANDOM.nextInt(HEIGHT / 10) + 2;
+        }
+        int left = RANDOM.nextInt(WIDTH - randomWidth);
+        int bottom = RANDOM.nextInt(HEIGHT - randomHeight);
+        return new Rectangle(left, bottom, left + randomWidth, bottom + randomHeight);
+    }
+
+    public boolean canRoomPlaced(Rectangle rectangle, ArrayList<Rectangle> existRects) {
+        for (var room : existRects) {
+            if (isOverlap(room, rectangle)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean isOverlap(Rectangle rec1, Rectangle rec2) {
+        if (rec1.left == rec1.right
+                || rec1.bottom == rec1.top
+                || rec2.left == rec2.right
+                || rec2.bottom == rec2.top) {
+            return false;
+        }
+        return !(rec1.right < rec2.left - 1
+                || // left
+                rec1.top < rec2.bottom - 1
+                || // bottom
+                rec1.left > rec2.right + 1
+                || // right
+                rec1.bottom > rec2.top + 1); // top
+    }
+
+    public TETile[][] roomSet(ArrayList<Rectangle> existRects) {
         TETile[][] randomRoom = new TETile[WIDTH][HEIGHT];
-        fillWithRandomTiles(randomRoom, RANDOM);
+        for (int i = 0; i < WIDTH; i++) {
+            for (int j = 0; j < HEIGHT; j++) {
+                randomRoom[i][j] = Tileset.NOTHING;
+            }
+        }
+        /** !! TODO:draw floor */
+        for (var room : existRects) {
+            int x = room.left;
+            int y = room.bottom;
+            while (x < room.right) {
+                randomRoom[x][y] = Tileset.WALL;
+                x++;
+            }
+            while (y < room.top) {
+                randomRoom[x][y] = Tileset.WALL;
+                y++;
+            }
+            while (x > room.left) {
+                randomRoom[x][y] = Tileset.WALL;
+                x--;
+            }
+            while (y > room.bottom) {
+                randomRoom[x][y] = Tileset.WALL;
+                y--;
+            }
+        }
         return randomRoom;
     }
 
-    public static void fillWithRandomTiles(TETile[][] tiles, Random RANDOM) {
-        int height = tiles[0].length;
-        int width = tiles.length;
-        for (int x = 0; x < width; x += 1) {
-            for (int y = 0; y < height; y += 1) {
-                tiles[x][y] = randomTile(RANDOM);
-            }
-        }
-    }
-
-    private static TETile randomTile(Random RANDOM) {
-        int tileNum = RANDOM.nextInt(2);
-        if (tileNum == 0) {
-            return Tileset.WALL;
-        }
-        return Tileset.NOTHING;
-    }
-
-    public void showWorld(TETile[][] finalWorldFrame){
-        ter.initialize(WIDTH,HEIGHT);
+    public void showWorld(TETile[][] finalWorldFrame) {
+        ter.initialize(WIDTH, HEIGHT);
         ter.renderFrame(finalWorldFrame);
     }
 
-    public void play(TETile[][] finalWorldFrame){
-
-    }
-
+    public void play(TETile[][] finalWorldFrame) {}
 }
