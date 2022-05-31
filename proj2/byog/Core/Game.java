@@ -13,9 +13,6 @@ public class Game {
     public static final int WIDTH = 100;
     public static final int HEIGHT = 50;
 
-    /** Method used for playing a fresh game. The game should start from the main menu. */
-    public void playWithKeyboard() {}
-
     public static class Rectangle {
         int left;
         int right;
@@ -29,6 +26,11 @@ public class Game {
             this.bottom = bottom;
         }
     }
+
+    /** Method used for playing a fresh game. The game should start from the main menu. */
+    public void playWithKeyboard() {}
+
+
 
     /**
      * Method used for autograding and testing the game code. The input string will be a series of
@@ -48,8 +50,7 @@ public class Game {
         // and return a 2D tile representation of the world that would have been
         // drawn if the same inputs had been given to playWithKeyboard().
 
-        TETile[][] finalWorldFrame = inputProcess(input);
-        return finalWorldFrame;
+        return inputProcess(input);
     }
 
     /** * @param input is an argument * @return the finalWorldFrame */
@@ -83,7 +84,7 @@ public class Game {
     }
 
     /** * @param input is a String * @return String to int */
-    /** !!TODO: getseed */
+    /** ??  !!!!!!!!  NEXT TODO: getseed */
     public long getSeed(String input) {
         input = input.substring(0, input.length() - 1);
         input = input.substring(1);
@@ -116,6 +117,7 @@ public class Game {
     }
 
     /** * @param randomRoom is a random room * @return the linked random room */
+    /** !! TODO: linkedRoom */
     public TETile[][] linkedRandomRoom(TETile[][] randomRoom) {
         return null;
     }
@@ -166,7 +168,6 @@ public class Game {
                 randomRoom[i][j] = Tileset.NOTHING;
             }
         }
-        /** !! TODO:draw floor */
         for (var room : existRects) {
             int x = room.left;
             int y = room.bottom;
@@ -200,5 +201,6 @@ public class Game {
         ter.renderFrame(finalWorldFrame);
     }
 
+    /** !! TODO: play*/
     public void play(TETile[][] finalWorldFrame) {}
 }
