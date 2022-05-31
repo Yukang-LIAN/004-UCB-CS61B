@@ -10,8 +10,8 @@ import java.util.Random;
 public class Game {
     TERenderer ter = new TERenderer();
     /* Feel free to change the width and height. */
-    public static final int WIDTH = 80;
-    public static final int HEIGHT = 40;
+    public static final int WIDTH = 100;
+    public static final int HEIGHT = 50;
 
     /** Method used for playing a fresh game. The game should start from the main menu. */
     public void playWithKeyboard() {}
@@ -185,6 +185,11 @@ public class Game {
             while (y > room.bottom) {
                 randomRoom[x][y] = Tileset.WALL;
                 y--;
+            }
+            for (x = room.left + 1; x < room.right; x++) {
+                for (y = room.bottom + 1; y < room.top; y++) {
+                    randomRoom[x][y] = Tileset.FLOOR;
+                }
             }
         }
         return randomRoom;
