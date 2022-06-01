@@ -116,7 +116,7 @@ public class Game {
     public TETile[][] generateWorld() {
         TETile[][] randomRoom = generateRandomRoom(50);
         TETile[][] linkedRoom = linkedRandomRoom(randomRoom);
-        TETile[][] finalWorldFrame=generateDoor(linkedRoom);
+        TETile[][] finalWorldFrame = generateDoor(linkedRoom);
         return finalWorldFrame;
     }
 
@@ -147,13 +147,13 @@ public class Game {
         existRects.sort(Comparator.comparing(o -> (o.left * o.left + o.bottom * o.bottom)));
         /** !!!!! */
         for (var room : existRects) {
-            int roomX = RANDOM.nextInt(room.getWidth() ) + room.left;
-            int roomY = RANDOM.nextInt(room.getHeight() ) + room.bottom;
+            int roomX = RANDOM.nextInt(room.getWidth()) + room.left;
+            int roomY = RANDOM.nextInt(room.getHeight()) + room.bottom;
             linkedRandomRoom = linked2Room(randomRoom, mainX, mainY, roomX, roomY);
             mainX = roomX;
             mainY = roomY;
         }
-        linkedRandomRoom=fixWall(linkedRandomRoom);
+        linkedRandomRoom = fixWall(linkedRandomRoom);
         return linkedRandomRoom;
     }
 
@@ -185,17 +185,17 @@ public class Game {
         return linkedRandomRoom;
     }
 
-    public TETile[][] fixWall(TETile[][] linkedRandomRoom){
-        for(int x=1;x<WIDTH-1;x++){
-            for(int y=1;y<HEIGHT-1;y++){
-                if(linkedRandomRoom[x][y]==Tileset.FLOOR){
-                    for(int i=-1;i<2;i++){
-                        for(int j=-1;j<2;j++){
-                            if(i==0&&j==0){
+    public TETile[][] fixWall(TETile[][] linkedRandomRoom) {
+        for (int x = 1; x < WIDTH - 1; x++) {
+            for (int y = 1; y < HEIGHT - 1; y++) {
+                if (linkedRandomRoom[x][y] == Tileset.FLOOR) {
+                    for (int i = -1; i < 2; i++) {
+                        for (int j = -1; j < 2; j++) {
+                            if (i == 0 && j == 0) {
                                 continue;
                             }
-                            if(linkedRandomRoom[x+i][y+j]==Tileset.NOTHING){
-                                linkedRandomRoom[x+i][y+j]=Tileset.WALL;
+                            if (linkedRandomRoom[x + i][y + j] == Tileset.NOTHING) {
+                                linkedRandomRoom[x + i][y + j] = Tileset.WALL;
                             }
                         }
                     }
@@ -214,8 +214,8 @@ public class Game {
             randomWidth = RANDOM.nextInt(WIDTH / 20) + 2;
             randomHeight = RANDOM.nextInt(HEIGHT / 10) + 2;
         }
-        int left = RANDOM.nextInt(WIDTH - randomWidth-1)+1;
-        int bottom = RANDOM.nextInt(HEIGHT - randomHeight-1)+1;
+        int left = RANDOM.nextInt(WIDTH - randomWidth - 1) + 1;
+        int bottom = RANDOM.nextInt(HEIGHT - randomHeight - 1) + 1;
         return new Rectangle(left, bottom, left + randomWidth, bottom + randomHeight);
     }
 
@@ -285,16 +285,18 @@ public class Game {
     }
 
     public TETile[][] generateDoor(TETile[][] linkedRandomRoom) {
-        while(true){
-            int x=RANDOM.nextInt(WIDTH);
-            int y=RANDOM.nextInt(HEIGHT);
-            if(linkedRandomRoom[x][y]==Tileset.WALL){
-                if((linkedRandomRoom[x-1][y]==Tileset.WALL)&&(linkedRandomRoom[x+1][y]==Tileset.WALL)){
-                    linkedRandomRoom[x][y]=Tileset.LOCKED_DOOR;
+        while (true) {
+            int x = RANDOM.nextInt(WIDTH);
+            int y = RANDOM.nextInt(HEIGHT);
+            if (linkedRandomRoom[x][y] == Tileset.WALL) {
+                if ((linkedRandomRoom[x - 1][y] == Tileset.WALL)
+                        && (linkedRandomRoom[x + 1][y] == Tileset.WALL)) {
+                    linkedRandomRoom[x][y] = Tileset.LOCKED_DOOR;
                     break;
                 }
-                if((linkedRandomRoom[x][y-1]==Tileset.WALL)&&(linkedRandomRoom[x][y+1]==Tileset.WALL)){
-                    linkedRandomRoom[x][y]=Tileset.LOCKED_DOOR;
+                if ((linkedRandomRoom[x][y - 1] == Tileset.WALL)
+                        && (linkedRandomRoom[x][y + 1] == Tileset.WALL)) {
+                    linkedRandomRoom[x][y] = Tileset.LOCKED_DOOR;
                     break;
                 }
             }
