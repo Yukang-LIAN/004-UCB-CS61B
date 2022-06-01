@@ -16,7 +16,7 @@ public class Game {
 
     public static long SEED;
 
-    Random RANDOM = new Random(SEED);
+    public static Random RANDOM;
 
     public ArrayList<Rectangle> existRects;
 
@@ -109,6 +109,7 @@ public class Game {
         int indexS = input.indexOf('s');
         String stringSEED = input.substring(1, indexS);
         SEED = Long.parseLong(stringSEED);
+        RANDOM= new Random(SEED);
         return Long.parseLong(stringSEED);
     }
 
@@ -280,14 +281,14 @@ public class Game {
     }
 
     public void showWorld(TETile[][] finalWorldFrame) {
-        //ter.initialize(WIDTH, HEIGHT);
-        //ter.renderFrame(finalWorldFrame);
+        ter.initialize(WIDTH, HEIGHT);
+        ter.renderFrame(finalWorldFrame);
     }
 
     public TETile[][] generateDoor(TETile[][] linkedRandomRoom) {
         while (true) {
-            int x = RANDOM.nextInt(WIDTH);
-            int y = RANDOM.nextInt(HEIGHT);
+            int x = RANDOM.nextInt(WIDTH-2)+1;
+            int y = RANDOM.nextInt(HEIGHT-2)+1;
             if (linkedRandomRoom[x][y] == Tileset.WALL) {
                 if ((linkedRandomRoom[x - 1][y] == Tileset.WALL)
                         && (linkedRandomRoom[x + 1][y] == Tileset.WALL)) {

@@ -6,6 +6,8 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 
+import java.util.concurrent.TimeUnit;
+
 public class gameTest {
     public Game game = new Game();
 
@@ -44,4 +46,21 @@ public class gameTest {
         boolean output1=game.canRoomPlaced(rec1,exist);
         assertTrue(output1);
     }
+    @Test
+    public void testWholeGame(){
+        game.playWithInputString("n5197880843569031643s");
+        game.playWithInputString("n5197880843569031643s");
+        int i=0;
+    }
+
+
+    public static void main(String[] args) throws InterruptedException {
+        Game game=new Game();
+        game.playWithInputString("n5197880843569031643s");
+
+        TimeUnit.SECONDS.sleep(5);
+        game.playWithInputString("n5197880843569031643s");
+    }
 }
+
+
