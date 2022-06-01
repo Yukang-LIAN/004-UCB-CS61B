@@ -7,7 +7,6 @@ import byog.TileEngine.Tileset;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Random;
-import edu.princeton.cs.introcs.StdDraw;
 
 public class Game {
     TERenderer ter = new TERenderer();
@@ -281,8 +280,8 @@ public class Game {
     }
 
     public void showWorld(TETile[][] finalWorldFrame) {
-        ter.initialize(WIDTH, HEIGHT);
-        ter.renderFrame(finalWorldFrame);
+        //ter.initialize(WIDTH, HEIGHT);
+        //ter.renderFrame(finalWorldFrame);
     }
 
     public TETile[][] generateDoor(TETile[][] linkedRandomRoom) {
