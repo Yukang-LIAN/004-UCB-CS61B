@@ -7,6 +7,7 @@ import byog.TileEngine.Tileset;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Random;
+import edu.princeton.cs.introcs.StdDraw;
 
 public class Game {
     TERenderer ter = new TERenderer();
