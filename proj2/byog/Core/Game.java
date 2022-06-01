@@ -5,6 +5,7 @@ import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Random;
 
 public class Game {
@@ -12,6 +13,12 @@ public class Game {
     /* Feel free to change the width and height. */
     public static final int WIDTH = 100;
     public static final int HEIGHT = 50;
+
+    public static long SEED;
+
+    Random RANDOM = new Random(SEED);
+
+    public ArrayList<Rectangle> existRects;
 
     public static class Rectangle {
         int left;
@@ -25,12 +32,26 @@ public class Game {
             this.top = top;
             this.bottom = bottom;
         }
+
+        private int getRoomX() {
+            return left + (right - left) / 2;
+        }
+
+        private int getRoomY() {
+            return bottom + (top - bottom) / 2;
+        }
+
+        private int getWidth() {
+            return right - left;
+        }
+
+        private int getHeight() {
+            return top - bottom;
+        }
     }
 
     /** Method used for playing a fresh game. The game should start from the main menu. */
     public void playWithKeyboard() {}
-
-
 
     /**
      * Method used for autograding and testing the game code. The input string will be a series of
@@ -71,7 +92,7 @@ public class Game {
     /** * @param input is an argument * @return the new random world */
     public TETile[][] newGame(String input) {
         long SEED = getSeed(input);
-        TETile[][] finalWorldFrame = generateWorld(SEED);
+        TETile[][] finalWorldFrame = generateWorld();
         showWorld(finalWorldFrame);
         play(finalWorldFrame);
         return finalWorldFrame;
@@ -84,27 +105,27 @@ public class Game {
     }
 
     /** * @param input is a String * @return String to int */
-    /** ??  !!!!!!!!  NEXT TODO: getseed */
     public long getSeed(String input) {
-        input = input.substring(0, input.length() - 1);
-        input = input.substring(1);
-        return Long.parseLong(input);
+        int indexS = input.indexOf('s');
+        String stringSEED = input.substring(1, indexS);
+        SEED = Long.parseLong(stringSEED);
+        return Long.parseLong(stringSEED);
     }
 
     /** * @param SEED is a random number * @return the whole world */
-    public TETile[][] generateWorld(long SEED) {
-        TETile[][] randomRoom = generateRandomRoom(SEED, 1000);
+    public TETile[][] generateWorld() {
+        TETile[][] randomRoom = generateRandomRoom(50);
         TETile[][] linkedRoom = linkedRandomRoom(randomRoom);
-        /** !! TODO: return linkedRoom */
-        return randomRoom;
+        TETile[][] finalWorldFrame=generateDoor(linkedRoom);
+        return finalWorldFrame;
     }
 
     /** * @param SEED is a random number * @return the random room */
-    public TETile[][] generateRandomRoom(long SEED, int roomNum) {
+    public TETile[][] generateRandomRoom(int roomNum) {
         ArrayList<Rectangle> existRects = new ArrayList<>();
         int th = 0;
         for (int i = 0; i < roomNum; ) {
-            Rectangle rectangle = generateRectangle(new Random(SEED + i + th), th);
+            Rectangle rectangle = generateRectangle(th);
             if (canRoomPlaced(rectangle, existRects)) {
                 i++;
                 existRects.add(rectangle);
@@ -113,16 +134,78 @@ public class Game {
                 if (th > 1000) break;
             }
         }
+        this.existRects = existRects;
         return roomSet(existRects);
     }
 
     /** * @param randomRoom is a random room * @return the linked random room */
     /** !! TODO: linkedRoom */
     public TETile[][] linkedRandomRoom(TETile[][] randomRoom) {
-        return null;
+        TETile[][] linkedRandomRoom = new TETile[WIDTH][HEIGHT];
+        Rectangle mainRoom = existRects.remove(existRects.size() - 1);
+        int mainX = mainRoom.getRoomX(), mainY = mainRoom.getRoomY();
+        existRects.sort(Comparator.comparing(o -> (o.left * o.left + o.bottom * o.bottom)));
+        /** !!!!! */
+        for (var room : existRects) {
+            int roomX = RANDOM.nextInt(room.getWidth() ) + room.left;
+            int roomY = RANDOM.nextInt(room.getHeight() ) + room.bottom;
+            linkedRandomRoom = linked2Room(randomRoom, mainX, mainY, roomX, roomY);
+            mainX = roomX;
+            mainY = roomY;
+        }
+        linkedRandomRoom=fixWall(linkedRandomRoom);
+        return linkedRandomRoom;
     }
 
-    public Rectangle generateRectangle(Random RANDOM, int tryNum) {
+    public TETile[][] linked2Room(
+            TETile[][] randomRoom, int mainX, int mainY, int roomX, int roomY) {
+        TETile[][] linkedRandomRoom = randomRoom;
+        if (mainX < roomX) {
+            while (mainX < roomX) {
+                linkedRandomRoom[mainX][mainY] = Tileset.FLOOR;
+                mainX++;
+            }
+        } else {
+            while (mainX > roomX) {
+                linkedRandomRoom[mainX][mainY] = Tileset.FLOOR;
+                mainX--;
+            }
+        }
+        if (mainY < roomY) {
+            while (mainY < roomY) {
+                linkedRandomRoom[mainX][mainY] = Tileset.FLOOR;
+                mainY++;
+            }
+        } else {
+            while (mainY > roomY) {
+                linkedRandomRoom[mainX][mainY] = Tileset.FLOOR;
+                mainY--;
+            }
+        }
+        return linkedRandomRoom;
+    }
+
+    public TETile[][] fixWall(TETile[][] linkedRandomRoom){
+        for(int x=1;x<WIDTH-1;x++){
+            for(int y=1;y<HEIGHT-1;y++){
+                if(linkedRandomRoom[x][y]==Tileset.FLOOR){
+                    for(int i=-1;i<2;i++){
+                        for(int j=-1;j<2;j++){
+                            if(i==0&&j==0){
+                                continue;
+                            }
+                            if(linkedRandomRoom[x+i][y+j]==Tileset.NOTHING){
+                                linkedRandomRoom[x+i][y+j]=Tileset.WALL;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return linkedRandomRoom;
+    }
+
+    public Rectangle generateRectangle(int tryNum) {
         int randomWidth, randomHeight;
         if (tryNum < 50) {
             randomWidth = RANDOM.nextInt(WIDTH / 10) + 2;
@@ -131,8 +214,8 @@ public class Game {
             randomWidth = RANDOM.nextInt(WIDTH / 20) + 2;
             randomHeight = RANDOM.nextInt(HEIGHT / 10) + 2;
         }
-        int left = RANDOM.nextInt(WIDTH - randomWidth);
-        int bottom = RANDOM.nextInt(HEIGHT - randomHeight);
+        int left = RANDOM.nextInt(WIDTH - randomWidth-1)+1;
+        int bottom = RANDOM.nextInt(HEIGHT - randomHeight-1)+1;
         return new Rectangle(left, bottom, left + randomWidth, bottom + randomHeight);
     }
 
@@ -201,6 +284,24 @@ public class Game {
         ter.renderFrame(finalWorldFrame);
     }
 
-    /** !! TODO: play*/
+    public TETile[][] generateDoor(TETile[][] linkedRandomRoom) {
+        while(true){
+            int x=RANDOM.nextInt(WIDTH);
+            int y=RANDOM.nextInt(HEIGHT);
+            if(linkedRandomRoom[x][y]==Tileset.WALL){
+                if((linkedRandomRoom[x-1][y]==Tileset.WALL)&&(linkedRandomRoom[x+1][y]==Tileset.WALL)){
+                    linkedRandomRoom[x][y]=Tileset.LOCKED_DOOR;
+                    break;
+                }
+                if((linkedRandomRoom[x][y-1]==Tileset.WALL)&&(linkedRandomRoom[x][y+1]==Tileset.WALL)){
+                    linkedRandomRoom[x][y]=Tileset.LOCKED_DOOR;
+                    break;
+                }
+            }
+        }
+        return linkedRandomRoom;
+    }
+
+    /** !! TODO: play */
     public void play(TETile[][] finalWorldFrame) {}
 }
