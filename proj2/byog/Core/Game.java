@@ -366,8 +366,8 @@ public class Game {
     }
 
     public void showWorld(TETile[][] finalWorldFrame) {
-        //ter.initialize(WIDTH, HEIGHT);
-        //ter.renderFrame(finalWorldFrame);
+        ter.initialize(WIDTH, HEIGHT);
+        ter.renderFrame(finalWorldFrame);
     }
 
     public TETile[][] generateDoor(TETile[][] linkedRandomRoom) {
@@ -414,19 +414,19 @@ public class Game {
             switch (c) {
                 case 'a':
                     finalWorldFrame = player.walkLeft(finalWorldFrame);
-                    //ter.renderFrame(finalWorldFrame);
+                    ter.renderFrame(finalWorldFrame);
                     break;
                 case 'd':
                     finalWorldFrame = player.walkRight(finalWorldFrame);
-                    //ter.renderFrame(finalWorldFrame);
+                    ter.renderFrame(finalWorldFrame);
                     break;
                 case 's':
                     finalWorldFrame = player.walkBottom(finalWorldFrame);
-                    //ter.renderFrame(finalWorldFrame);
+                    ter.renderFrame(finalWorldFrame);
                     break;
                 case 'w':
                     finalWorldFrame = player.walkTop(finalWorldFrame);
-                    //ter.renderFrame(finalWorldFrame);
+                    ter.renderFrame(finalWorldFrame);
                     break;
                 case ':':
                     while (true) {
