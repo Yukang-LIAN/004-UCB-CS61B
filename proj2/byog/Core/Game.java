@@ -1,8 +1,11 @@
 package byog.Core;
 
+import java.awt.Color;
+import java.awt.Font;
 import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
+import edu.princeton.cs.introcs.StdDraw;
 
 import java.io.FileOutputStream;
 import java.io.FileInputStream;
@@ -58,7 +61,10 @@ public class Game {
     }
 
     /** Method used for playing a fresh game. The game should start from the main menu. */
-    public void playWithKeyboard() {}
+    public void playWithKeyboard() {
+        /** !! TODO: playWithKeyboard */
+        drawStartUI();
+    }
 
     /**
      * Method used for autograding and testing the game code. The input string will be a series of
@@ -108,7 +114,6 @@ public class Game {
     }
 
     /** * @param SEED is a an argument * @return the loaded world */
-    /** ! !!!!!! TODO: loadGame */
     public TETile[][] loadGame(String input) {
         TETile[][] finalWorldFrame = getSavedGame();
         finalWorldFrame = play(finalWorldFrame, input.substring(1));
@@ -383,5 +388,30 @@ public class Game {
             e.printStackTrace();
         }
         return finalWorldFrame;
+    }
+
+    private void drawStartUI() {
+        initializeCanvas();
+
+        Font font = new Font("Monaco", Font.PLAIN, 60);
+        StdDraw.setFont(font);
+        StdDraw.text(WIDTH / 2, 3 * HEIGHT / 4, "CS61B: THE GAME");
+
+        Font smallFont = new Font("Monaco", Font.PLAIN, 30);
+        StdDraw.setFont(smallFont);
+        StdDraw.text(WIDTH / 2, HEIGHT / 4 + 2, "New Game (N)");
+        StdDraw.text(WIDTH / 2, HEIGHT / 4, "Load Game (L)");
+        StdDraw.text(WIDTH / 2, HEIGHT / 4 - 2, "Quit (Q)");
+
+        StdDraw.show();
+    }
+
+    private void initializeCanvas() {
+        StdDraw.setCanvasSize(WIDTH * 16, (HEIGHT + 1) * 16);
+        StdDraw.setXscale(0, WIDTH);
+        StdDraw.setYscale(0, HEIGHT + 1);
+        StdDraw.clear(Color.BLACK);
+        StdDraw.enableDoubleBuffering();
+        StdDraw.setPenColor(Color.WHITE);
     }
 }
