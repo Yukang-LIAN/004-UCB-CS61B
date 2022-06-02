@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Random;
 
+import static java.lang.System.exit;
+
 public class Game {
     TERenderer ter = new TERenderer();
     /* Feel free to change the width and height. */
@@ -64,6 +66,28 @@ public class Game {
     public void playWithKeyboard() {
         /** !! TODO: playWithKeyboard */
         drawStartUI();
+        char firstChar = getFirstChar();
+        if (firstChar == 'n') {
+            newGame();
+        } else if (firstChar == 'l') {
+            loadGame();
+        } else {
+            exit(0);
+        }
+    }
+
+    private char getFirstChar() {
+        char c;
+        while (true) {
+            if (!StdDraw.hasNextKeyTyped()) {
+                continue;
+            }
+            c = Character.toLowerCase(StdDraw.nextKeyTyped());
+            if (c == 'l' || c == 'n' || c == 'q') {
+                break;
+            }
+        }
+        return c;
     }
 
     /**
@@ -97,14 +121,21 @@ public class Game {
         } else if (firstChar == 'l') {
             finalWorldFrame = loadGame(input);
         } else if (firstChar == 'q') {
-            System.exit(0);
+            exit(0);
         }
         return finalWorldFrame;
     }
 
+    public void newGame() {
+        getSeed();
+        TETile[][] finalWorldFrame = generateWorld();
+        showWorld(finalWorldFrame);
+        play(finalWorldFrame);
+    }
+
     /** * @param input is an argument * @return the new random world */
     public TETile[][] newGame(String input) {
-        long SEED = getSeed(input);
+        getSeed(input);
         int indexS = input.indexOf('s');
         TETile[][] finalWorldFrame = generateWorld();
         showWorld(finalWorldFrame);
@@ -113,12 +144,50 @@ public class Game {
         return finalWorldFrame;
     }
 
+    public void loadGame() {
+        TETile[][] finalWorldFrame = getSavedGame();
+        showWorld(finalWorldFrame);
+        play(finalWorldFrame);
+    }
+
     /** * @param SEED is a an argument * @return the loaded world */
     public TETile[][] loadGame(String input) {
         TETile[][] finalWorldFrame = getSavedGame();
         finalWorldFrame = play(finalWorldFrame, input.substring(1));
         showWorld(finalWorldFrame);
         return finalWorldFrame;
+    }
+
+    public void getSeed() {
+        StdDraw.clear(Color.BLACK);
+        StdDraw.setFont(new Font("Monaco", Font.PLAIN, 50));
+        StdDraw.text(WIDTH / 2, 3 * HEIGHT / 4, "Please enter a random seed:");
+        StdDraw.show();
+        String seedString = "";
+        while (true) {
+            StdDraw.clear(Color.BLACK);
+            StdDraw.setFont(new Font("Monaco", Font.PLAIN, 50));
+            StdDraw.text(WIDTH / 2, 3 * HEIGHT / 4, "Please enter a random seed:");
+
+            char digit;
+            if (!StdDraw.hasNextKeyTyped()) {
+                continue;
+            }
+            digit = Character.toLowerCase(StdDraw.nextKeyTyped());
+            if (digit != 's') {
+                if (!Character.isDigit(digit)) {
+                    continue;
+                }
+                seedString += digit;
+                StdDraw.setFont(new Font("Monaco", Font.PLAIN, 30));
+                StdDraw.text(WIDTH / 2, HEIGHT / 2, seedString);
+                StdDraw.show();
+            } else {
+                break;
+            }
+        }
+        SEED = Long.parseLong(seedString);
+        RANDOM = new Random(SEED);
     }
 
     /** * @param input is a String * @return String to int */
@@ -336,10 +405,51 @@ public class Game {
         return worldWithRoom;
     }
 
+    public void play(TETile[][] finalWorldFrame) {
+        while (true) {
+            if (!StdDraw.hasNextKeyTyped()) {
+                continue;
+            }
+            char c = Character.toLowerCase(StdDraw.nextKeyTyped());
+            switch (c) {
+                case 'a':
+                    finalWorldFrame = player.walkLeft(finalWorldFrame);
+                    ter.renderFrame(finalWorldFrame);
+                    break;
+                case 'd':
+                    finalWorldFrame = player.walkRight(finalWorldFrame);
+                    ter.renderFrame(finalWorldFrame);
+                    break;
+                case 's':
+                    finalWorldFrame = player.walkBottom(finalWorldFrame);
+                    ter.renderFrame(finalWorldFrame);
+                    break;
+                case 'w':
+                    finalWorldFrame = player.walkTop(finalWorldFrame);
+                    ter.renderFrame(finalWorldFrame);
+                    break;
+                case ':':
+                    while (true) {
+                        if (!StdDraw.hasNextKeyTyped()) {
+                            continue;
+                        }
+                        if (Character.toLowerCase(StdDraw.nextKeyTyped()) == 'q') {
+                            saveGame(finalWorldFrame);
+                            System.exit(0);
+                        } else {
+                            break;
+                        }
+                    }
+                    break;
+                default:
+            }
+        }
+    }
+
     public TETile[][] play(TETile[][] finalWorldFrame, String order) {
         for (int i = 0; i < order.length(); i++) {
-            char a = order.charAt(i);
-            switch (a) {
+            char c = order.charAt(i);
+            switch (c) {
                 case 'a':
                     finalWorldFrame = player.walkLeft(finalWorldFrame);
                     break;
@@ -356,6 +466,7 @@ public class Game {
                     if (i + 1 < order.length() && order.charAt(i + 1) == 'q') {
                         saveGame(finalWorldFrame);
                     }
+                    break;
                 default:
             }
         }

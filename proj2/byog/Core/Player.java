@@ -9,7 +9,7 @@ public class Player {
 
 
     public TETile[][] walkLeft(TETile[][] world){
-        if(world[playerX-1][playerY]==Tileset.FLOOR){
+        if(world[playerX-1][playerY].equals(Tileset.FLOOR)){
             world[playerX][playerY]=Tileset.FLOOR;
             playerX--;
             world[playerX][playerY]=Tileset.PLAYER;
@@ -18,7 +18,7 @@ public class Player {
     }
 
     public TETile[][] walkRight(TETile[][] world){
-        if(world[playerX+1][playerY]==Tileset.FLOOR){
+        if(world[playerX+1][playerY].equals(Tileset.FLOOR)){
             world[playerX][playerY]=Tileset.FLOOR;
             playerX++;
             world[playerX][playerY]=Tileset.PLAYER;
@@ -27,7 +27,7 @@ public class Player {
     }
 
     public TETile[][] walkBottom(TETile[][] world){
-        if(world[playerX][playerY-1]==Tileset.FLOOR){
+        if(world[playerX][playerY-1].equals(Tileset.FLOOR)){
             world[playerX][playerY]=Tileset.FLOOR;
             playerY--;
             world[playerX][playerY]=Tileset.PLAYER;
@@ -36,9 +36,9 @@ public class Player {
     }
 
     public TETile[][] walkTop(TETile[][] world){
-        if(world[playerX][playerY+1]==Tileset.FLOOR){
+        if(world[playerX][playerY+1].equals(Tileset.FLOOR)){
             world[playerX][playerY]=Tileset.FLOOR;
-            playerX++;
+            playerY++;
             world[playerX][playerY]=Tileset.PLAYER;
         }
         return world;
