@@ -281,8 +281,8 @@ public class Game {
     }
 
     public void showWorld(TETile[][] finalWorldFrame) {
-        //ter.initialize(WIDTH, HEIGHT);
-        //ter.renderFrame(finalWorldFrame);
+        ter.initialize(WIDTH, HEIGHT);
+        ter.renderFrame(finalWorldFrame);
     }
 
     public TETile[][] generateDoor(TETile[][] linkedRandomRoom) {
