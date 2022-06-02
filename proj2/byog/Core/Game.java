@@ -4,6 +4,11 @@ import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
 
+import java.io.FileOutputStream;
+import java.io.FileInputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Random;
@@ -19,6 +24,8 @@ public class Game {
     public static Random RANDOM;
 
     public ArrayList<Rectangle> existRects;
+
+    Player player = new Player();
 
     public static class Rectangle {
         int left;
@@ -92,9 +99,12 @@ public class Game {
     /** * @param input is an argument * @return the new random world */
     public TETile[][] newGame(String input) {
         long SEED = getSeed(input);
+        int indexS = input.indexOf('s');
         TETile[][] finalWorldFrame = generateWorld();
         showWorld(finalWorldFrame);
-        play(finalWorldFrame);
+        /** ! TODO:Play */
+        finalWorldFrame=play(finalWorldFrame, input.substring(indexS + 1));
+        showWorld(finalWorldFrame);
         return finalWorldFrame;
     }
 
@@ -109,7 +119,7 @@ public class Game {
         int indexS = input.indexOf('s');
         String stringSEED = input.substring(1, indexS);
         SEED = Long.parseLong(stringSEED);
-        RANDOM= new Random(SEED);
+        RANDOM = new Random(SEED);
         return Long.parseLong(stringSEED);
     }
 
@@ -117,7 +127,8 @@ public class Game {
     public TETile[][] generateWorld() {
         TETile[][] randomRoom = generateRandomRoom(50);
         TETile[][] linkedRoom = linkedRandomRoom(randomRoom);
-        TETile[][] finalWorldFrame = generateDoor(linkedRoom);
+        TETile[][] worldWithRoom = generateDoor(linkedRoom);
+        TETile[][] finalWorldFrame = generatePlayer(worldWithRoom);
         return finalWorldFrame;
     }
 
@@ -140,13 +151,11 @@ public class Game {
     }
 
     /** * @param randomRoom is a random room * @return the linked random room */
-    /** !! TODO: linkedRoom */
     public TETile[][] linkedRandomRoom(TETile[][] randomRoom) {
         TETile[][] linkedRandomRoom = new TETile[WIDTH][HEIGHT];
         Rectangle mainRoom = existRects.remove(existRects.size() - 1);
         int mainX = mainRoom.getRoomX(), mainY = mainRoom.getRoomY();
         existRects.sort(Comparator.comparing(o -> (o.left * o.left + o.bottom * o.bottom)));
-        /** !!!!! */
         for (var room : existRects) {
             int roomX = RANDOM.nextInt(room.getWidth()) + room.left;
             int roomY = RANDOM.nextInt(room.getHeight()) + room.bottom;
@@ -281,14 +290,14 @@ public class Game {
     }
 
     public void showWorld(TETile[][] finalWorldFrame) {
-        //ter.initialize(WIDTH, HEIGHT);
-        //ter.renderFrame(finalWorldFrame);
+        ter.initialize(WIDTH, HEIGHT);
+        ter.renderFrame(finalWorldFrame);
     }
 
     public TETile[][] generateDoor(TETile[][] linkedRandomRoom) {
         while (true) {
-            int x = RANDOM.nextInt(WIDTH-2)+1;
-            int y = RANDOM.nextInt(HEIGHT-2)+1;
+            int x = RANDOM.nextInt(WIDTH - 2) + 1;
+            int y = RANDOM.nextInt(HEIGHT - 2) + 1;
             if (linkedRandomRoom[x][y] == Tileset.WALL) {
                 if ((linkedRandomRoom[x - 1][y] == Tileset.WALL)
                         && (linkedRandomRoom[x + 1][y] == Tileset.WALL)) {
@@ -305,6 +314,57 @@ public class Game {
         return linkedRandomRoom;
     }
 
+    public TETile[][] generatePlayer(TETile[][] worldWithRoom) {
+        while (true) {
+            int x = RANDOM.nextInt(WIDTH - 2) + 1;
+            int y = RANDOM.nextInt(HEIGHT - 2) + 1;
+            if (worldWithRoom[x][y] == Tileset.FLOOR) {
+                worldWithRoom[x][y] = Tileset.PLAYER;
+                player.playerX = x;
+                player.playerY = y;
+
+                break;
+            }
+        }
+        return worldWithRoom;
+    }
+
     /** !! TODO: play */
-    public void play(TETile[][] finalWorldFrame) {}
+    public TETile[][] play(TETile[][] finalWorldFrame, String order) {
+        for (int i = 0; i < order.length(); i++) {
+            char a = order.charAt(i);
+            switch (a) {
+                case 'a':
+                    finalWorldFrame=player.walkLeft(finalWorldFrame);
+                    break;
+                case 'd':
+                    finalWorldFrame=player.walkRight(finalWorldFrame);
+                    break;
+                case 's':
+                    finalWorldFrame=player.walkBottom(finalWorldFrame);
+                    break;
+                case 'w':
+                    finalWorldFrame=player.walkTop(finalWorldFrame);
+                    break;
+                case ':':
+                    if(i+1<order.length() && order.charAt(i+1)=='q'){
+                        saveGame(finalWorldFrame);
+                    }
+                default:
+            }
+        }
+        return finalWorldFrame;
+    }
+
+    private void saveGame(TETile[][] finalWorldFrame) {
+        try {
+            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("savefile.txt"));
+            out.writeObject(finalWorldFrame);
+            out.writeObject(Player.playerX);
+            out.writeObject(Player.playerY);
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
