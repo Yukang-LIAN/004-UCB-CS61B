@@ -102,7 +102,7 @@ public class Game {
         int indexS = input.indexOf('s');
         TETile[][] finalWorldFrame = generateWorld();
         showWorld(finalWorldFrame);
-        finalWorldFrame=play(finalWorldFrame, input.substring(indexS + 1));
+        finalWorldFrame = play(finalWorldFrame, input.substring(indexS + 1));
         showWorld(finalWorldFrame);
         return finalWorldFrame;
     }
@@ -110,8 +110,8 @@ public class Game {
     /** * @param SEED is a an argument * @return the loaded world */
     /** ! !!!!!! TODO: loadGame */
     public TETile[][] loadGame(String input) {
-        TETile[][] finalWorldFrame=getSavedGame();
-        finalWorldFrame=play(finalWorldFrame,input.substring(1));
+        TETile[][] finalWorldFrame = getSavedGame();
+        finalWorldFrame = play(finalWorldFrame, input.substring(1));
         showWorld(finalWorldFrame);
         return finalWorldFrame;
     }
@@ -336,19 +336,19 @@ public class Game {
             char a = order.charAt(i);
             switch (a) {
                 case 'a':
-                    finalWorldFrame=player.walkLeft(finalWorldFrame);
+                    finalWorldFrame = player.walkLeft(finalWorldFrame);
                     break;
                 case 'd':
-                    finalWorldFrame=player.walkRight(finalWorldFrame);
+                    finalWorldFrame = player.walkRight(finalWorldFrame);
                     break;
                 case 's':
-                    finalWorldFrame=player.walkBottom(finalWorldFrame);
+                    finalWorldFrame = player.walkBottom(finalWorldFrame);
                     break;
                 case 'w':
-                    finalWorldFrame=player.walkTop(finalWorldFrame);
+                    finalWorldFrame = player.walkTop(finalWorldFrame);
                     break;
                 case ':':
-                    if(i+1<order.length() && order.charAt(i+1)=='q'){
+                    if (i + 1 < order.length() && order.charAt(i + 1) == 'q') {
                         saveGame(finalWorldFrame);
                     }
                 default:
@@ -374,8 +374,8 @@ public class Game {
         try {
             ObjectInputStream in = new ObjectInputStream(new FileInputStream("savefile.txt"));
             finalWorldFrame = (TETile[][]) in.readObject();
-            Player.playerX=((int) in.readObject());
-            Player.playerY=((int) in.readObject());
+            Player.playerX = ((int) in.readObject());
+            Player.playerY = ((int) in.readObject());
             in.close();
         } catch (IOException e) {
             e.printStackTrace();

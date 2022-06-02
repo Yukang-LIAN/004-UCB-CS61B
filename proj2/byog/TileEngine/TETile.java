@@ -1,6 +1,7 @@
 package byog.TileEngine;
 
 import java.awt.Color;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -11,17 +12,17 @@ import byog.Core.RandomUtils;
  * The TETile object is used to represent a single tile in your game. A 2D array of tiles make up a
  * board, and can be drawn to the screen using the TERenderer class.
  *
- * All TETile objects must have a character, textcolor, and background color to be used to represent
- * the tile when drawn to the screen. You can also optionally provide a path to an image file of an
- * appropriate size (16x16) to be drawn in place of the unicode representation. If the image path
- * provided cannot be found, draw will fallback to using the provided character and color
+ * <p>All TETile objects must have a character, textcolor, and background color to be used to
+ * represent the tile when drawn to the screen. You can also optionally provide a path to an image
+ * file of an appropriate size (16x16) to be drawn in place of the unicode representation. If the
+ * image path provided cannot be found, draw will fallback to using the provided character and color
  * representation, so you are free to use image tiles on your own computer.
  *
- * The provided TETile is immutable, i.e. none of its instance variables can change. You are welcome
- * to make your TETile class mutable, if you prefer.
+ * <p>The provided TETile is immutable, i.e. none of its instance variables can change. You are
+ * welcome to make your TETile class mutable, if you prefer.
  */
-
-public class TETile {
+public class TETile implements Serializable {
+    private static final long serialVersionUID = 1925294367263605586L;
     private final char character; // Do not rename character or the autograder will break.
     private final Color textColor;
     private final Color backgroundColor;
@@ -30,14 +31,19 @@ public class TETile {
 
     /**
      * Full constructor for TETile objects.
+     *
      * @param character The character displayed on the screen.
      * @param textColor The color of the character itself.
      * @param backgroundColor The color drawn behind the character.
      * @param description The description of the tile, shown in the GUI on hovering over the tile.
      * @param filepath Full path to image to be used for this tile. Must be correct size (16x16)
      */
-    public TETile(char character, Color textColor, Color backgroundColor, String description,
-                  String filepath) {
+    public TETile(
+            char character,
+            Color textColor,
+            Color backgroundColor,
+            String description,
+            String filepath) {
         this.character = character;
         this.textColor = textColor;
         this.backgroundColor = backgroundColor;
@@ -46,8 +52,9 @@ public class TETile {
     }
 
     /**
-     * Constructor without filepath. In this case, filepath will be null, so when drawing, we
-     * will not even try to draw an image, and will instead use the provided character and colors.
+     * Constructor without filepath. In this case, filepath will be null, so when drawing, we will
+     * not even try to draw an image, and will instead use the provided character and colors.
+     *
      * @param character The character displayed on the screen.
      * @param textColor The color of the character itself.
      * @param backgroundColor The color drawn behind the character.
@@ -63,6 +70,7 @@ public class TETile {
 
     /**
      * Creates a copy of TETile t, except with given textColor.
+     *
      * @param t tile to copy
      * @param textColor foreground color for tile copy
      */
@@ -70,14 +78,14 @@ public class TETile {
         this(t.character, textColor, t.backgroundColor, t.description, t.filepath);
     }
 
-
     /**
-     * Draws the tile to the screen at location x, y. If a valid filepath is provided,
-     * we draw the image located at that filepath to the screen. Otherwise, we fall
-     * back to the character and color representation for the tile.
+     * Draws the tile to the screen at location x, y. If a valid filepath is provided, we draw the
+     * image located at that filepath to the screen. Otherwise, we fall back to the character and
+     * color representation for the tile.
      *
-     * Note that the image provided must be of the right size (16x16). It will not be
+     * <p>Note that the image provided must be of the right size (16x16). It will not be
      * automatically resized or truncated.
+     *
      * @param x x coordinate
      * @param y y coordinate
      */
@@ -98,7 +106,9 @@ public class TETile {
         StdDraw.text(x + 0.5, y + 0.5, Character.toString(character()));
     }
 
-    /** Character representation of the tile. Used for drawing in text mode.
+    /**
+     * Character representation of the tile. Used for drawing in text mode.
+     *
      * @return character representation
      */
     public char character() {
@@ -106,8 +116,9 @@ public class TETile {
     }
 
     /**
-     * Description of the tile. Useful for displaying mouseover text or
-     * testing that two tiles represent the same type of thing.
+     * Description of the tile. Useful for displaying mouseover text or testing that two tiles
+     * represent the same type of thing.
+     *
      * @return description of the tile
      */
     public String description() {
@@ -115,9 +126,9 @@ public class TETile {
     }
 
     /**
-     * Creates a copy of the given tile with a slightly different text color. The new
-     * color will have a red value that is within dr of the current red value,
-     * and likewise with dg and db.
+     * Creates a copy of the given tile with a slightly different text color. The new color will
+     * have a red value that is within dr of the current red value, and likewise with dg and db.
+     *
      * @param t the tile to copy
      * @param dr the maximum difference in red value
      * @param dg the maximum difference in green value
@@ -144,11 +155,11 @@ public class TETile {
     }
 
     /**
-     * Converts the given 2D array to a String. Handy for debugging.
-     * Note that since y = 0 is actually the bottom of your world when
-     * drawn using the tile rendering engine, this print method has to
-     * print in what might seem like backwards order (so that the 0th
-     * row gets printed last).
+     * Converts the given 2D array to a String. Handy for debugging. Note that since y = 0 is
+     * actually the bottom of your world when drawn using the tile rendering engine, this print
+     * method has to print in what might seem like backwards order (so that the 0th row gets printed
+     * last).
+     *
      * @param world the 2D world to print
      * @return string representation of the world
      */
@@ -160,8 +171,8 @@ public class TETile {
         for (int y = height - 1; y >= 0; y -= 1) {
             for (int x = 0; x < width; x += 1) {
                 if (world[x][y] == null) {
-                    throw new IllegalArgumentException("Tile at position x=" + x + ", y=" + y
-                            + " is null.");
+                    throw new IllegalArgumentException(
+                            "Tile at position x=" + x + ", y=" + y + " is null.");
                 }
                 sb.append(world[x][y].character());
             }
@@ -172,8 +183,9 @@ public class TETile {
 
     /**
      * Makes a copy of the given 2D tile array.
+     *
      * @param tiles the 2D array to copy
-     **/
+     */
     public static TETile[][] copyOf(TETile[][] tiles) {
         if (tiles == null) {
             return null;
@@ -191,9 +203,7 @@ public class TETile {
     }
 
     @Override
-    /** Provides an equals method that is consistent
-     *  with the way that the autograder works.
-     */
+    /** Provides an equals method that is consistent with the way that the autograder works. */
     public boolean equals(Object x) {
         if (this == x) {
             return true;
