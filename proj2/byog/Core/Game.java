@@ -102,7 +102,6 @@ public class Game {
         int indexS = input.indexOf('s');
         TETile[][] finalWorldFrame = generateWorld();
         showWorld(finalWorldFrame);
-        /** ! TODO:Play */
         finalWorldFrame=play(finalWorldFrame, input.substring(indexS + 1));
         showWorld(finalWorldFrame);
         return finalWorldFrame;
@@ -111,7 +110,10 @@ public class Game {
     /** * @param SEED is a an argument * @return the loaded world */
     /** ! !!!!!! TODO: loadGame */
     public TETile[][] loadGame(String input) {
-        return null;
+        TETile[][] finalWorldFrame=getSavedGame();
+        finalWorldFrame=play(finalWorldFrame,input.substring(1));
+        showWorld(finalWorldFrame);
+        return finalWorldFrame;
     }
 
     /** * @param input is a String * @return String to int */
@@ -329,7 +331,6 @@ public class Game {
         return worldWithRoom;
     }
 
-    /** !! TODO: play */
     public TETile[][] play(TETile[][] finalWorldFrame, String order) {
         for (int i = 0; i < order.length(); i++) {
             char a = order.charAt(i);
@@ -366,5 +367,21 @@ public class Game {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private TETile[][] getSavedGame() {
+        TETile[][] finalWorldFrame = null;
+        try {
+            ObjectInputStream in = new ObjectInputStream(new FileInputStream("savefile.txt"));
+            finalWorldFrame = (TETile[][]) in.readObject();
+            Player.playerX=((int) in.readObject());
+            Player.playerY=((int) in.readObject());
+            in.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return finalWorldFrame;
     }
 }
