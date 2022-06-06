@@ -12,6 +12,7 @@ public class Percolation {
     private int bottomSite;
     private boolean openFlag[][];
     private WeightedQuickUnionUF model;
+    private WeightedQuickUnionUF modelWithoutBottom;
 
     /**
      * * create N-by-N grid, with all sites initially blocked
@@ -26,6 +27,7 @@ public class Percolation {
         this.bottomSite = N * N + 1;
         openFlag = new boolean[N][N];
         model = new WeightedQuickUnionUF(N * N + 2);
+        modelWithoutBottom = new WeightedQuickUnionUF(N * N + 1);
 
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
@@ -33,8 +35,12 @@ public class Percolation {
             }
         }
 
+
         for (int i = 0; i < N; i++) {
             model.union(topSite, xyTo1D(0, i));
+        }
+        for (int i = 0; i < N; i++) {
+            modelWithoutBottom.union(topSite, xyTo1D(0, i));
         }
 
         for (int i = 0; i < N; i++) {
@@ -43,7 +49,7 @@ public class Percolation {
     }
 
     /**
-     * open the site (row, col) if it is not open already
+     * * open the site (row, col) if it is not open already
      */
     public void open(int row, int col) {
         if (isOpen(row, col)) {
@@ -55,31 +61,31 @@ public class Percolation {
     }
 
     /**
-     * is the site (row, col) open?
+     * * is the site (row, col) open?
      */
     public boolean isOpen(int row, int col) {
         return openFlag[row][col];
     }
 
     /**
-     * is the site (row, col) full?
+     * * is the site (row, col) full?
      */
     public boolean isFull(int row, int col) {
         if (!isOpen(row, col)) {
             return false;
         }
-        return model.connected(xyTo1D(row, col), topSite);
+        return modelWithoutBottom.connected(xyTo1D(row, col), topSite);
     }
 
     /**
-     * number of open sites
+     * * number of open sites
      */
     public int numberOfOpenSites() {
         return openNum;
     }
 
     /**
-     * does the system percolate?
+     * * does the system percolate?
      */
     public boolean percolates() {
         return model.connected(topSite, bottomSite);
@@ -105,11 +111,12 @@ public class Percolation {
         }
         if (isOpen(bx, by)) {
             model.union(xyTo1D(ax, ay), xyTo1D(bx, by));
+            modelWithoutBottom.union(xyTo1D(ax, ay), xyTo1D(bx, by));
         }
     }
 
     /**
-     * use for unit testing (not required)
+     * * use for unit testing (not required)
      */
     public static void main(String[] args) {
 
