@@ -52,6 +52,7 @@ public class Percolation {
      * * open the site (row, col) if it is not open already
      */
     public void open(int row, int col) {
+        validateRange(row, col);
         if (isOpen(row, col)) {
             return;
         }
@@ -64,6 +65,7 @@ public class Percolation {
      * * is the site (row, col) open?
      */
     public boolean isOpen(int row, int col) {
+        validateRange(row, col);
         return openFlag[row][col];
     }
 
@@ -71,6 +73,7 @@ public class Percolation {
      * * is the site (row, col) full?
      */
     public boolean isFull(int row, int col) {
+        validateRange(row, col);
         if (!isOpen(row, col)) {
             return false;
         }
@@ -98,6 +101,9 @@ public class Percolation {
         return r * this.N + c;
     }
 
+    /**
+     * * connect with four neighbors if they are not open
+     */
     private void connectWithNeighbor(int row, int col) {
         connectBlock(row, col, row - 1, col);
         connectBlock(row, col, row + 1, col);
@@ -105,6 +111,9 @@ public class Percolation {
         connectBlock(row, col, row, col - 1);
     }
 
+    /**
+     * * connect with block if it's not open
+     */
     private void connectBlock(int ax, int ay, int bx, int by) {
         if (bx < 0 || bx >= N || by < 0 || by >= N) {
             return;
@@ -112,6 +121,15 @@ public class Percolation {
         if (isOpen(bx, by)) {
             model.union(xyTo1D(ax, ay), xyTo1D(bx, by));
             modelWithoutBottom.union(xyTo1D(ax, ay), xyTo1D(bx, by));
+        }
+    }
+
+    /**
+     * * check if input is validate
+     */
+    private void validateRange(int row, int col) {
+        if (row < 0 || row >= N || col < 0 || col >= N) {
+            throw new IndexOutOfBoundsException();
         }
     }
 
