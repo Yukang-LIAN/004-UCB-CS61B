@@ -45,7 +45,7 @@ public class Percolation {
     /**
      * open the site (row, col) if it is not open already
      */
-    void open(int row, int col) {
+    public void open(int row, int col) {
         if (isOpen(row, col)) {
             return;
         }
@@ -57,14 +57,14 @@ public class Percolation {
     /**
      * is the site (row, col) open?
      */
-    boolean isOpen(int row, int col) {
+    public boolean isOpen(int row, int col) {
         return openFlag[row][col];
     }
 
     /**
      * is the site (row, col) full?
      */
-    boolean isFull(int row, int col) {
+    public boolean isFull(int row, int col) {
         if (!isOpen(row, col)) {
             return false;
         }
@@ -74,14 +74,14 @@ public class Percolation {
     /**
      * number of open sites
      */
-    int numberOfOpenSites() {
+    public int numberOfOpenSites() {
         return openNum;
     }
 
     /**
      * does the system percolate?
      */
-    boolean percolates() {
+    public boolean percolates() {
         return model.connected(topSite, bottomSite);
     }
 
@@ -111,7 +111,7 @@ public class Percolation {
     /**
      * use for unit testing (not required)
      */
-    static void main(String[] args) {
+    public static void main(String[] args) {
 
     }
 
