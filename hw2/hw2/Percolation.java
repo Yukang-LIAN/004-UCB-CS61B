@@ -91,6 +91,9 @@ public class Percolation {
      * * does the system percolate?
      */
     public boolean percolates() {
+        if (numberOfOpenSites() == 0) {
+            return false;
+        }
         return model.connected(topSite, bottomSite);
     }
 
