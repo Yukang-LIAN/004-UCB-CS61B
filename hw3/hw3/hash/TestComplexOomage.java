@@ -1,6 +1,7 @@
 package hw3.hash;
 
 import org.junit.Test;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -42,11 +43,11 @@ public class TestComplexOomage {
         List<Oomage> deadlyList = new ArrayList<>();
 
         // Your code here.
-        int N=100;
-        for(int i = 0; i < N; i += 1){
+        int N = 100;
+        for (int i = 0; i < N; i += 1) {
             List<Integer> params = new ArrayList<>();
             params.add(1);
-            for(int j=0;j<=i;j++){
+            for (int j = 0; j <= i; j++) {
                 params.add(0);
             }
             deadlyList.add(new ComplexOomage(params));
@@ -56,7 +57,9 @@ public class TestComplexOomage {
         assertTrue(OomageTestUtility.haveNiceHashCodeSpread(deadlyList, 10));
     }
 
-    /** Calls tests for SimpleOomage. */
+    /**
+     * Calls tests for SimpleOomage.
+     */
     public static void main(String[] args) {
         jh61b.junit.textui.runClasses(TestComplexOomage.class);
     }
