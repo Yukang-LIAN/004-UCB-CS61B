@@ -123,7 +123,7 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
         }
 
         /* TODO: Your code here! */
-        Node newNode = new Node(item, priority);
+        ArrayHeap<T>.Node newNode = new ArrayHeap<T>.Node(item, priority);
         contents[++size] = newNode;
         swim(size);
     }
