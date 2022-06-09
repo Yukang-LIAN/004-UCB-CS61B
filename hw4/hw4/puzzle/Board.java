@@ -88,7 +88,6 @@ public class Board implements WorldState {
                 if (tileAt(i, j) != xyTo1D(i, j)) {
                     hamming++;
                 }
-                ;
             }
         }
         return hamming;
