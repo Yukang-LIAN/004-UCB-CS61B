@@ -46,7 +46,7 @@ public class Solver {
      * * puzzle using the A* algorithm. Assumes a solution exists.
      */
     public Solver(WorldState initial) {
-        MinPQ<Node> pq = new MinPQ<Node>(new NodeComparator());
+        MinPQ<Node> pq = new MinPQ<>(new NodeComparator());
         Node currentNode = new Node(initial, 0, null);
         pq.insert(currentNode);
 
@@ -57,7 +57,7 @@ public class Solver {
             }
             for (WorldState w : currentNode.state.neighbors()) {
                 Node newNode = new Node(w, currentNode.move + 1, currentNode);
-                if ((currentNode.prev != null) && (newNode.state.equals(currentNode.prev.state))) {
+                if ((currentNode.prev != null) && (w.equals(currentNode.prev.state))) {
                     continue;
                 }
                 pq.insert(newNode);
