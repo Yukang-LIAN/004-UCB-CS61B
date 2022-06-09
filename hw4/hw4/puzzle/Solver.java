@@ -73,10 +73,18 @@ public class Solver {
         }
     }
 
+    /**
+     * * Returns the minimum number of moves to solve the puzzle starting
+     * * at the initial WorldState.
+     */
     public int moves() {
         return solution.size() - 1;
     }
 
+    /**
+     * * Returns a sequence of WorldStates from the initial WorldState
+     * * to the solution.
+     */
     public Iterable<WorldState> solution() {
         return solution;
     }
