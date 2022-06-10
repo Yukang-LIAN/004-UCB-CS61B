@@ -83,11 +83,13 @@ public class MergeSort {
         int mid = items.size() / 2;
         Queue<Item> left = new Queue<Item>();
         Queue<Item> right = new Queue<Item>();
-        for (int i = 0; i < mid; i++) {
-            left.enqueue(items.dequeue());
-        }
-        while (!items.isEmpty()) {
-            right.enqueue(items.dequeue());
+        for (Item item : items) {
+            if (mid > 0) {
+                left.enqueue(item);
+            } else {
+                right.enqueue(item);
+            }
+            mid--;
         }
 
         Queue<Item> leftSorted = mergeSort(left);
@@ -107,6 +109,7 @@ public class MergeSort {
         System.out.println("original queue: " + students);
         Queue<String> sorted1 = MergeSort.mergeSort(students);
         System.out.println("sorted queue: " + sorted1);
+        System.out.println(students.size() == sorted1.size());
 
         Queue<Integer> numbers = new Queue<Integer>();
         numbers.enqueue(0);
@@ -119,6 +122,7 @@ public class MergeSort {
         System.out.println("original queue: " + numbers);
         Queue<Integer> sorted2 = MergeSort.mergeSort(numbers);
         System.out.println("sorted queue: " + sorted2);
+        System.out.println(numbers.size() == sorted2.size());
 
     }
 }
