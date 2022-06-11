@@ -8,6 +8,13 @@ import java.util.Map;
  * not draw the output correctly.
  */
 public class Rasterer {
+    private static final double ULLAT = MapServer.ROOT_ULLAT;
+    private static final double ULLON = MapServer.ROOT_ULLON;
+    private static final double LRLAT = MapServer.ROOT_LRLAT;
+    private static final double LRLON = MapServer.ROOT_LRLON;
+    private static final double TILE_SIZE = MapServer.TILE_SIZE;
+    private static final double LON_WIDTH = Math.abs(MapServer.ROOT_ULLON - MapServer.ROOT_LRLON);
+    private static final double LAT_HEIGHT = Math.abs(MapServer.ROOT_ULLAT - MapServer.ROOT_LRLAT);
 
     public Rasterer() {
         // YOUR CODE HERE
@@ -16,21 +23,20 @@ public class Rasterer {
     /**
      * Takes a user query and finds the grid of images that best matches the query. These
      * images will be combined into one big image (rastered) by the front end. <br>
-     *
-     *     The grid of images must obey the following properties, where image in the
-     *     grid is referred to as a "tile".
-     *     <ul>
-     *         <li>The tiles collected must cover the most longitudinal distance per pixel
-     *         (LonDPP) possible, while still covering less than or equal to the amount of
-     *         longitudinal distance per pixel in the query box for the user viewport size. </li>
-     *         <li>Contains all tiles that intersect the query bounding box that fulfill the
-     *         above condition.</li>
-     *         <li>The tiles must be arranged in-order to reconstruct the full image.</li>
-     *     </ul>
+     * <p>
+     * The grid of images must obey the following properties, where image in the
+     * is referred to as a "tile".
+     * <ul>
+     *     <li>The tiles collected must cover the most longitudinal distance per pixel
+     *     (LonDPP) possible, while still covering less than or equal to the amount of
+     *     longitudinal distance per pixel in the query box for the user viewport size. </li>
+     *     <li>Contains all tiles that intersect the query bounding box that fulfill the
+     *     above condition.</li>
+     *     <li>The tiles must be arranged in-order to reconstruct the full image.</li>
+     * </ul>
      *
      * @param params Map of the HTTP GET request's query parameters - the query box and
      *               the user viewport width and height.
-     *
      * @return A map of results for the front end as specified: <br>
      * "render_grid"   : String[][], the files to display. <br>
      * "raster_ul_lon" : Number, the bounding upper left longitude of the rastered image. <br>
@@ -39,14 +45,36 @@ public class Rasterer {
      * "raster_lr_lat" : Number, the bounding lower right latitude of the rastered image. <br>
      * "depth"         : Number, the depth of the nodes of the rastered image <br>
      * "query_success" : Boolean, whether the query was able to successfully complete; don't
-     *                    forget to set this to true on success! <br>
+     * forget to set this to true on success! <br>
      */
     public Map<String, Object> getMapRaster(Map<String, Double> params) {
         // System.out.println(params);
         Map<String, Object> results = new HashMap<>();
-        System.out.println("Since you haven't implemented getMapRaster, nothing is displayed in "
-                           + "your browser.");
+        double lrlon = params.get("lrlon");
+        double lrlat = params.get("lrlat");
+        double ullon = params.get("ullon");
+        double ullat = params.get("ullat");
+        double width = params.get("w");
+        double height = params.get("h");
+
+        if (lrlon < ullon || ullat < lrlat || lrlon <= ULLON || lrlat >= ULLAT || ullon >= LRLON || ullat <= LRLAT) {
+            results.put("query_success", false);
+            results.put("render_grid", null);
+            results.put("raster_ul_lon", 0);
+            results.put("raster_ul_lat", 0);
+            results.put("raster_lr_lon", 0);
+            results.put("raster_lr_lat", 0);
+            results.put("raster_depth", 0);
+            return results;
+        }
+
+        double requiredLonDpp = (lrlon - ullon) / width;
+        int k = getDepth(requiredLonDpp);
         return results;
+    }
+
+    private int getDepth(double requiredLonDpp) {
+        return 0;
     }
 
 }
