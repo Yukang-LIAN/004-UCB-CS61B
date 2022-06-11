@@ -111,6 +111,7 @@ public class Rasterer {
                 files[i - heightMin][j - widthMin] = "d" + k + "_x" + j + "_y" + i + ".png";
             }
         }
+
         results.put("query_success", true);
         results.put("render_grid", files);
         results.put("raster_ul_lon", left);
@@ -124,10 +125,12 @@ public class Rasterer {
     private int getDepth(double requiredLonDpp) {
         int k = 0;
         double LonDpp = (LRLON - ULLON) / TILE_SIZE;
+
         while (requiredLonDpp < LonDpp) {
             LonDpp = LonDpp / 2;
             k++;
         }
+
         k = Math.min(k, 7);
         return k;
     }
