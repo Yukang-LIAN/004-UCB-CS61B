@@ -1,6 +1,9 @@
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.awt.image.ImageObserver.HEIGHT;
+import static java.awt.image.ImageObserver.WIDTH;
+
 /**
  * This class provides all code necessary to take a query box and produce
  * a query result. The getMapRaster method must return a Map containing all
@@ -70,11 +73,63 @@ public class Rasterer {
 
         double requiredLonDpp = (lrlon - ullon) / width;
         int k = getDepth(requiredLonDpp);
+        results.put("depth", k);
+
+        double pictureWidth = LON_WIDTH / Math.pow(2, k);
+        double pictureHeight = LAT_HEIGHT / Math.pow(2, k);
+
+        int widthMin = (int) (Math.floor((ullon - ULLON) / pictureWidth));
+        int widthMax = (int) (Math.floor((lrlon - ULLON) / pictureWidth));
+        int heightMin = (int) (Math.floor((ULLAT - ullat) / pictureHeight));
+        int heightMax = (int) (Math.floor((ULLAT - lrlat) / pictureHeight));
+
+        double left = ULLON + widthMin * pictureWidth;
+        double right = ULLON + (widthMax + 1) * pictureWidth;
+        double top = ULLAT - heightMin * pictureHeight;
+        double bottom = ULLAT - (heightMax + 1) * pictureHeight;
+
+        if (ullon < ULLON) {
+            widthMin = 0;
+            left = ULLON;
+        }
+        if (lrlon > LRLON) {
+            widthMax = (int) Math.pow(2, k) - 1;
+            right = LRLON;
+        }
+        if (ullat > ULLAT) {
+            heightMin = 0;
+            top = ULLAT;
+        }
+        if (lrlat < LRLAT) {
+            heightMax = (int) Math.pow(2, k) - 1;
+            bottom = LRLAT;
+        }
+
+        String[][] files = new String[heightMax - heightMin + 1][widthMax - widthMin + 1];
+        for (int i = heightMin; i <= heightMax; i++) {
+            for (int j = widthMin; j <= widthMax; j++) {
+                files[i - heightMin][j - widthMin] = "d" + k + "_x" + j + "_y" + i + ".png";
+            }
+        }
+        results.put("query_success", true);
+        results.put("render_grid", files);
+        results.put("raster_ul_lon", left);
+        results.put("raster_ul_lat", top);
+        results.put("raster_lr_lon", right);
+        results.put("raster_lr_lat", bottom);
+
         return results;
     }
 
     private int getDepth(double requiredLonDpp) {
-        return 0;
+        int k = 0;
+        double LonDpp = (LRLON - ULLON) / TILE_SIZE;
+        while (requiredLonDpp < LonDpp) {
+            LonDpp = LonDpp / 2;
+            k++;
+        }
+        k = Math.min(k, 7);
+        return k;
     }
 
 }
