@@ -3,10 +3,14 @@ import org.xml.sax.SAXException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.util.ArrayList;
+
 
 /**
  * Graph for storing all of the intersection (vertex) and road (edge) information.
@@ -18,12 +22,85 @@ import java.util.ArrayList;
  * @author Alan Yao, Josh Hug
  */
 public class GraphDB {
-    /** Your instance variables for storing the graph. You should consider
-     * creating helper classes, e.g. Node, Edge, etc. */
+    /**
+     * Your instance variables for storing the graph. You should consider
+     * creating helper classes, e.g. Node, Edge, etc.
+     */
+    private Map<Long, Node> nodes = new HashMap<>();
+    private Map<String, ArrayList<Long>> names = new HashMap<>();
+    private Map<Long, ArrayList<Long>> adjNodes = new HashMap<>();
+    private Map<Long, ArrayList<Edge>> adjEdge = new HashMap<>();
+    private Map<Long, Node> location = new HashMap<>();
+    //private Trie<Long> trie=new Trie();
+
+    public class Node {
+        private Long id;
+        private double lat;
+        private double lon;
+        private String name;
+
+        public Node(Long id, double lat, double lon) {
+            this.id = id;
+            this.lat = lat;
+            this.lon = lon;
+        }
+
+        public Long getID() {
+            return id;
+        }
+
+        public double getLat() {
+            return lat;
+        }
+
+        public double getLon() {
+            return lon;
+        }
+
+        public String getName() {
+            return name;
+        }
+    }
+
+    public class Edge {
+        private Long v;
+        private Long w;
+        private double distance;
+        private String name;
+
+        public Edge(Long v, Long w, double distance, String name) {
+            this.v = v;
+            this.w = w;
+            this.distance = distance;
+            this.name = name;
+        }
+
+        public Long getOne() {
+            return v;
+        }
+
+        public Long getOther(Long vertex) {
+            return vertex.equals(v) ? w : v;
+        }
+
+        public double getDistance() {
+            return distance;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+    }
+
+    Iterable<Edge> neighbors(Long v) {
+        return adjEdge.get(v);
+    }
 
     /**
      * Example constructor shows how to create and start an XML parser.
      * You do not need to modify this constructor, but you're welcome to do so.
+     *
      * @param dbPath Path to the XML file to be parsed.
      */
     public GraphDB(String dbPath) {
@@ -44,6 +121,7 @@ public class GraphDB {
 
     /**
      * Helper to process strings into their "cleaned" form, ignoring punctuation and capitalization.
+     *
      * @param s Input string.
      * @return Cleaned string.
      */
@@ -52,36 +130,48 @@ public class GraphDB {
     }
 
     /**
-     *  Remove nodes with no connections from the graph.
-     *  While this does not guarantee that any two nodes in the remaining graph are connected,
-     *  we can reasonably assume this since typically roads are connected.
+     * Remove nodes with no connections from the graph.
+     * While this does not guarantee that any two nodes in the remaining graph are connected,
+     * we can reasonably assume this since typically roads are connected.
      */
     private void clean() {
         // TODO: Your code here.
+        Iterator<Map.Entry<Long, ArrayList<Long>>> it = adjNodes.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<Long, ArrayList<Long>> entry = it.next();
+            if (entry.getValue().isEmpty()) {
+                nodes.remove(entry.getKey());
+                it.remove();
+            }
+        }
     }
 
     /**
      * Returns an iterable of all vertex IDs in the graph.
+     *
      * @return An iterable of id's of all vertices in the graph.
      */
     Iterable<Long> vertices() {
         //YOUR CODE HERE, this currently returns only an empty list.
-        return new ArrayList<Long>();
+        return nodes.keySet();
     }
 
     /**
      * Returns ids of all vertices adjacent to v.
+     *
      * @param v The id of the vertex we are looking adjacent to.
      * @return An iterable of the ids of the neighbors of v.
      */
     Iterable<Long> adjacent(long v) {
-        return null;
+        validateVertex(nodes.get(v));
+        return adjNodes.get(v);
     }
 
     /**
      * Returns the great-circle distance between vertices v and w in miles.
      * Assumes the lon/lat methods are implemented properly.
      * <a href="https://www.movable-type.co.uk/scripts/latlong.html">Source</a>.
+     *
      * @param v The id of the first vertex.
      * @param w The id of the second vertex.
      * @return The great-circle distance between the two locations from the graph.
@@ -109,6 +199,7 @@ public class GraphDB {
      * end point.
      * Assumes the lon/lat methods are implemented properly.
      * <a href="https://www.movable-type.co.uk/scripts/latlong.html">Source</a>.
+     *
      * @param v The id of the first vertex.
      * @param w The id of the second vertex.
      * @return The initial bearing between the vertices.
@@ -131,29 +222,90 @@ public class GraphDB {
 
     /**
      * Returns the vertex closest to the given longitude and latitude.
+     *
      * @param lon The target longitude.
      * @param lat The target latitude.
      * @return The id of the node in the graph closest to the target.
      */
     long closest(double lon, double lat) {
-        return 0;
+        double minDistance = Double.MAX_VALUE;
+        Long minID = 0L;
+        for (Long id : vertices()) {
+            double distance = distance(lon, lat, lon(id), lat(id));
+            if (distance < minDistance) {
+                minDistance = distance;
+                minID = id;
+            }
+        }
+        return minID;
     }
 
     /**
      * Gets the longitude of a vertex.
+     *
      * @param v The id of the vertex.
      * @return The longitude of the vertex.
      */
     double lon(long v) {
-        return 0;
+        validateVertex(nodes.get(v));
+        return nodes.get(v).lon;
     }
 
     /**
      * Gets the latitude of a vertex.
+     *
      * @param v The id of the vertex.
      * @return The latitude of the vertex.
      */
     double lat(long v) {
-        return 0;
+        validateVertex(nodes.get(v));
+        return nodes.get(v).lat;
+    }
+
+    String getName(Long id) {
+        if (nodes.get(id).name == null) {
+            throw new IllegalArgumentException();
+        }
+        return nodes.get(id).name;
+    }
+
+    ArrayList<Long> getLocation(String name) {
+        return names.get(cleanString(name));
+    }
+
+    void addName(Long id, double lat, double lon, String locationName) {
+        nodes.get(id).name = locationName;
+        location.get(id).name = locationName;
+    }
+
+    void addNode(Long id, double lon, double lat) {
+        Node newNode = new Node(id, lat, lon);
+        nodes.put(id, newNode);
+        location.put(id, newNode);
+        adjEdge.put(id, new ArrayList<>());
+        adjNodes.put(id, new ArrayList<>());
+    }
+
+    void addEdge(Long v, Long w, String edgeName) {
+        validateVertex(nodes.get(v));
+        validateVertex(nodes.get(w));
+
+        adjNodes.get(v).add(w);
+        adjNodes.get(w).add(v);
+        adjEdge.get(w).add(new Edge(v, w, distance(v, w), edgeName));
+        adjEdge.get(v).add(new Edge(v, w, distance(v, w), edgeName));
+    }
+
+    void addWay(ArrayList<Long> ways, String wayName) {
+        for (int i = 1; i < ways.size(); i++) {
+            addEdge(ways.get(i - 1), ways.get(i), wayName);
+        }
+    }
+
+
+    void validateVertex(Node v) {
+        if (!nodes.containsKey(v.id)) {
+            throw new IllegalArgumentException("Vertex" + v + "is not in the graph");
+        }
     }
 }
