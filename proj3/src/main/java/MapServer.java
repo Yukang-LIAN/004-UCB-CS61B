@@ -310,18 +310,7 @@ public class MapServer {
      * "id" : Number, The id of the node. <br>
      */
     public static List<Map<String, Object>> getLocations(String locationName) {
-        ArrayList<Long> nodes = graph.getLocations(locationName);
-        List<Map<String, Object>> result = new ArrayList<>();
-        for (Long i : nodes) {
-            Map<String, Object> nodeInfo = new HashMap<>();
-            GraphDB.Node node = graph.location.get(i);
-            nodeInfo.put("lat", node.getLat());
-            nodeInfo.put("lon", node.getLon());
-            nodeInfo.put("name", node.getName());
-            nodeInfo.put("id", node.getID());
-            result.add(nodeInfo);
-        }
-        return result;
+       return graph.getLocations(locationName);
     }
 
     /**
