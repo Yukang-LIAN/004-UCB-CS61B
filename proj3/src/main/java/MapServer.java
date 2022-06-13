@@ -319,6 +319,7 @@ public class MapServer {
             nodeInfo.put("lon", node.getLon());
             nodeInfo.put("name", node.getName());
             nodeInfo.put("id", node.getID());
+            result.add(nodeInfo);
         }
         return result;
     }

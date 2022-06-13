@@ -118,6 +118,7 @@ public class Rasterer {
         results.put("raster_ul_lat", top);
         results.put("raster_lr_lon", right);
         results.put("raster_lr_lat", bottom);
+        results.put("depth", k);
 
         return results;
     }

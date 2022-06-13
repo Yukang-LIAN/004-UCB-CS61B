@@ -259,12 +259,6 @@ public class GraphDB {
         return nodes.get(v).lat;
     }
 
-    String getName(Long id) {
-        if (nodes.get(id).name == null) {
-            throw new IllegalArgumentException();
-        }
-        return nodes.get(id).name;
-    }
 
 
     ArrayList<Long> getLocation(String name) {
@@ -288,6 +282,7 @@ public class GraphDB {
         location.put(id, newNode);
         adjEdge.put(id, new ArrayList<>());
         adjNodes.put(id, new ArrayList<>());
+
     }
 
     void addEdge(Long v, Long w, String edgeName) {
