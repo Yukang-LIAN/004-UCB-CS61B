@@ -261,7 +261,7 @@ public class GraphDB {
 
 
 
-    ArrayList<Long> getLocation(String name) {
+    ArrayList<Long> getLocations(String name) {
         return names.get(cleanString(name));
     }
 
