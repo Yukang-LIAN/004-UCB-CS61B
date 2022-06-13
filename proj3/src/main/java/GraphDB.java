@@ -308,7 +308,7 @@ public class GraphDB {
         }
     }
 
-    List<String> keysWithPrefixOf(String prefix) {
+    List<String> getLocationsByPrefix(String prefix) {
         List<String> result = new ArrayList<String>();
         for (String key : trie.keysWithPrefix(cleanString(prefix))) {
             for (Long id : names.get(key)) {
