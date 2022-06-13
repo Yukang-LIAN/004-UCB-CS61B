@@ -3,10 +3,7 @@ import org.xml.sax.SAXException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -30,8 +27,8 @@ public class GraphDB {
     private Map<String, ArrayList<Long>> names = new HashMap<>();
     private Map<Long, ArrayList<Long>> adjNodes = new HashMap<>();
     private Map<Long, ArrayList<Edge>> adjEdge = new HashMap<>();
-    private Map<Long, Node> location = new HashMap<>();
-    //private Trie<Long> trie=new Trie();
+    public Map<Long, Node> location = new HashMap<>();
+    private Trie<Long> trie = new Trie();
 
     public class Node {
         private Long id;
@@ -269,13 +266,20 @@ public class GraphDB {
         return nodes.get(id).name;
     }
 
+
     ArrayList<Long> getLocation(String name) {
         return names.get(cleanString(name));
     }
 
     void addName(Long id, double lat, double lon, String locationName) {
+        String cleanedName = cleanString(locationName);
+        if (!names.containsKey(cleanedName)) {
+            names.put(cleanedName, new ArrayList<>());
+        }
+        names.get(cleanedName).add(id);
         nodes.get(id).name = locationName;
         location.get(id).name = locationName;
+        trie.put(cleanedName, id);
     }
 
     void addNode(Long id, double lon, double lat) {
@@ -307,5 +311,16 @@ public class GraphDB {
         if (!nodes.containsKey(v.id)) {
             throw new IllegalArgumentException("Vertex" + v + "is not in the graph");
         }
+    }
+
+    List<String> keysWithPrefixOf(String prefix) {
+        List<String> result = new ArrayList<String>();
+        for (String key : trie.keysWithPrefix(cleanString(prefix))) {
+            for (Long id : names.get(key)) {
+                result.add(location.get(id).name);
+            }
+        }
+        System.out.println(result);
+        return result;
     }
 }
