@@ -87,11 +87,11 @@ public class Router {
         }
 
         Stack<searchNode> stack = new Stack<searchNode>();
-        while(newNode!=null){
+        while (newNode != null) {
             stack.push(newNode);
-            newNode=newNode.parent;
+            newNode = newNode.parent;
         }
-        while(!stack.isEmpty()){
+        while (!stack.isEmpty()) {
             shortestPath.add(stack.pop().id);
         }
         return shortestPath; // FIXME
@@ -117,9 +117,78 @@ public class Router {
      * route.
      */
     public static List<NavigationDirection> routeDirections(GraphDB g, List<Long> route) {
-        return null; // FIXME
+        double distance = 0;
+        int relativeDirection = NavigationDirection.START;
+        ArrayList<NavigationDirection> navigationDirection = new ArrayList<>();
+        ArrayList<GraphDB.Edge> ways = getWays(g, route);
+
+        if (ways.size() == 1) {
+            navigationDirection.add(new NavigationDirection(NavigationDirection.START, ways.get(0).getName(), ways.get(0).getDistance()));
+            return navigationDirection;
+        }
+
+        for (int i = 1; i < ways.size(); i++) {
+            Long prevNode = route.get(i - 1);
+            Long curNode = route.get(i);
+            Long nextNode = route.get(i + 1);
+            GraphDB.Edge prevEdge = ways.get(i - 1);
+            GraphDB.Edge nextEdge = ways.get(i);
+            String prevName = prevEdge.getName();
+            String nextName = nextEdge.getName();
+
+            distance = distance + prevEdge.getDistance();
+
+            if (!prevName.equals(nextName)) {
+                double prevBearing = g.bearing(prevNode, curNode);
+                double nextBearing = g.bearing(curNode, nextNode);
+
+                navigationDirection.add(new NavigationDirection(relativeDirection, prevName, distance));
+
+                relativeDirection = relativeDirection(prevBearing, nextBearing);
+                distance = 0;
+            }
+
+            if (i == ways.size() - 1) {
+                distance = distance + nextEdge.getDistance();
+                navigationDirection.add(new NavigationDirection(relativeDirection, nextName, distance));
+            }
+        }
+        return navigationDirection; // FIXME
     }
 
+    private static ArrayList<GraphDB.Edge> getWays(GraphDB g, List<Long> route) {
+        ArrayList<GraphDB.Edge> ways = new ArrayList<>();
+        for (int i = 1; i < route.size(); i++) {
+            Long curNode = route.get(i - 1);
+            Long newNode = route.get(i);
+            for (GraphDB.Edge e : g.neighbors(curNode)) {
+                if (e.getOther(curNode).equals(newNode)) {
+                    ways.add(e);
+                }
+            }
+        }
+        return ways;
+    }
+
+    private static int relativeDirection(double prevBearing, double nextBearing) {
+        double relativeBearing = nextBearing - prevBearing;
+        double absBearing = Math.abs(relativeBearing);
+        if (absBearing > 180) {
+            absBearing = 360 - absBearing;
+            relativeBearing = relativeBearing * (-1);
+        }
+        if (absBearing <= 15) {
+            return NavigationDirection.STRAIGHT;
+        }
+        if (absBearing <= 30) {
+            return relativeBearing < 0 ? NavigationDirection.SLIGHT_LEFT : NavigationDirection.SLIGHT_RIGHT;
+        }
+        if (absBearing <= 100) {
+            return relativeBearing < 0 ? NavigationDirection.LEFT : NavigationDirection.RIGHT;
+        } else {
+            return relativeBearing < 0 ? NavigationDirection.SHARP_LEFT : NavigationDirection.SHARP_RIGHT;
+        }
+    }
 
     /**
      * Class to represent a navigation direction, which consists of 3 attributes:
@@ -187,6 +256,13 @@ public class Router {
             this.way = UNKNOWN_ROAD;
             this.distance = 0.0;
         }
+
+        public NavigationDirection(int direction, String way, double distance) {
+            this.direction = direction;
+            this.way = way;
+            this.distance = distance;
+        }
+
 
         public String toString() {
             return String.format("%s on %s and continue for %.3f miles.",
