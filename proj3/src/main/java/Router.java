@@ -1,5 +1,4 @@
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,25 +11,106 @@ import java.util.regex.Pattern;
  * down to the priority you use to order your vertices.
  */
 public class Router {
+    private static GraphDB.Node startNode;
+    private static GraphDB.Node destNode;
+    private static GraphDB graphDB;
+
+    public static class searchNode implements Comparable<searchNode> {
+        public Long id;
+        public searchNode parent;
+        public double distanceToStart;
+        public double priority;
+
+        public searchNode(Long id, searchNode parent, double distanceToStart) {
+            this.id = id;
+            this.parent = parent;
+            this.distanceToStart = distanceToStart;
+            this.priority = distanceToStart + distanceToDest(id);
+        }
+
+        @Override
+        public int compareTo(searchNode o) {
+            if (this.priority < o.priority) {
+                return -1;
+            }
+            if (this.priority > o.priority) {
+                return 1;
+            }
+            return 0;
+        }
+    }
+
+    private static double distanceToDest(Long id) {
+        GraphDB.Node node = graphDB.nodes.get(id);
+        return graphDB.distance(id, destNode.getID());
+    }
+
+
     /**
      * Return a List of longs representing the shortest path from the node
      * closest to a start location and the node closest to the destination
      * location.
-     * @param g The graph to use.
-     * @param stlon The longitude of the start location.
-     * @param stlat The latitude of the start location.
+     *
+     * @param g       The graph to use.
+     * @param stlon   The longitude of the start location.
+     * @param stlat   The latitude of the start location.
      * @param destlon The longitude of the destination location.
      * @param destlat The latitude of the destination location.
      * @return A list of node id's in the order visited on the shortest path.
      */
     public static List<Long> shortestPath(GraphDB g, double stlon, double stlat,
                                           double destlon, double destlat) {
-        return null; // FIXME
+        graphDB = g;
+        Long startID = graphDB.closest(stlon, stlat);
+        Long destID = graphDB.closest(destlon, destlat);
+        startNode = graphDB.nodes.get(startID);
+        destNode = graphDB.nodes.get(destID);
+
+        List<Long> shortestPath = new ArrayList<Long>();
+        PriorityQueue<searchNode> pq = new PriorityQueue<searchNode>();
+        Map<Long, Boolean> map = new HashMap<Long, Boolean>();
+        searchNode newNode = new searchNode(startID, null, 0);
+
+        pq.add(newNode);
+
+        while (!pq.isEmpty()) {
+            newNode = pq.poll();
+            if (isGoal(newNode)) {
+                break;
+            }
+            map.put(newNode.id, true);
+            for (Long id : graphDB.adjacent(newNode.id)) {
+                if (!map.containsKey(id) || !map.get(id)) {
+                    pq.add(new searchNode(id, newNode, newNode.distanceToStart + distance(graphDB, id, newNode.id)));
+                }
+            }
+        }
+
+        Stack<searchNode> stack = new Stack<searchNode>();
+        while(newNode!=null){
+            stack.push(newNode);
+            newNode=newNode.parent;
+        }
+        while(!stack.isEmpty()){
+            shortestPath.add(stack.pop().id);
+        }
+        return shortestPath; // FIXME
+    }
+
+    private static boolean isGoal(searchNode node) {
+        return distanceToDest(node.id) == 0;
+    }
+
+    public static double distance(GraphDB g, long id, long start) {
+        GraphDB.Node v1 = g.nodes.get(id);
+        GraphDB.Node v2 = g.nodes.get(start);
+        return GraphDB.distance(v1.getLon(), v1.getLat(), v2.getLon(), v2.getLat());
     }
 
     /**
      * Create the list of directions corresponding to a route on the graph.
-     * @param g The graph to use.
+     *
+     * @param g     The graph to use.
      * @param route The route to translate into directions. Each element
      *              corresponds to a node from the graph in the route.
      * @return A list of NavigatiionDirection objects corresponding to the input
@@ -47,7 +127,9 @@ public class Router {
      */
     public static class NavigationDirection {
 
-        /** Integer constants representing directions. */
+        /**
+         * Integer constants representing directions.
+         */
         public static final int START = 0;
         public static final int STRAIGHT = 1;
         public static final int SLIGHT_LEFT = 2;
@@ -57,15 +139,21 @@ public class Router {
         public static final int SHARP_LEFT = 6;
         public static final int SHARP_RIGHT = 7;
 
-        /** Number of directions supported. */
+        /**
+         * Number of directions supported.
+         */
         public static final int NUM_DIRECTIONS = 8;
 
-        /** A mapping of integer values to directions.*/
+        /**
+         * A mapping of integer values to directions.
+         */
         public static final String[] DIRECTIONS = new String[NUM_DIRECTIONS];
 
-        /** Default name for an unknown way. */
+        /**
+         * Default name for an unknown way.
+         */
         public static final String UNKNOWN_ROAD = "unknown road";
-        
+
         /** Static initializer. */
         static {
             DIRECTIONS[START] = "Start";
@@ -78,11 +166,17 @@ public class Router {
             DIRECTIONS[SHARP_RIGHT] = "Sharp right";
         }
 
-        /** The direction a given NavigationDirection represents.*/
+        /**
+         * The direction a given NavigationDirection represents.
+         */
         int direction;
-        /** The name of the way I represent. */
+        /**
+         * The name of the way I represent.
+         */
         String way;
-        /** The distance along this way I represent. */
+        /**
+         * The distance along this way I represent.
+         */
         double distance;
 
         /**
@@ -102,6 +196,7 @@ public class Router {
         /**
          * Takes the string representation of a navigation direction and converts it into
          * a Navigation Direction object.
+         *
          * @param dirAsString The string representation of the NavigationDirection.
          * @return A NavigationDirection object representing the input string.
          */
@@ -149,8 +244,8 @@ public class Router {
         public boolean equals(Object o) {
             if (o instanceof NavigationDirection) {
                 return direction == ((NavigationDirection) o).direction
-                    && way.equals(((NavigationDirection) o).way)
-                    && distance == ((NavigationDirection) o).distance;
+                        && way.equals(((NavigationDirection) o).way)
+                        && distance == ((NavigationDirection) o).distance;
             }
             return false;
         }

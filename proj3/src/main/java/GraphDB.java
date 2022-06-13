@@ -26,7 +26,7 @@ public class GraphDB {
      * Your instance variables for storing the graph. You should consider
      * creating helper classes, e.g. Node, Edge, etc.
      */
-    private Map<Long, Node> nodes = new HashMap<>();
+    public Map<Long, Node> nodes = new HashMap<>();
     private Map<String, ArrayList<Long>> names = new HashMap<>();
     private Map<Long, ArrayList<Long>> adjNodes = new HashMap<>();
     private Map<Long, ArrayList<Edge>> adjEdge = new HashMap<>();
