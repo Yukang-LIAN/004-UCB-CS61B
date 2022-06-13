@@ -131,7 +131,6 @@ public class Rasterer {
             LonDpp = LonDpp / 2;
             k++;
         }
-
         k = Math.min(k, 7);
         return k;
     }
