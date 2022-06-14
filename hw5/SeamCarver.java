@@ -9,7 +9,7 @@ public class SeamCarver {
     private boolean isVertical = true;
 
     public SeamCarver(Picture picture) {
-        this.picture = picture;
+        this.picture = new Picture(picture);
         this.width = picture.width();
         this.height = picture.height();
     }
